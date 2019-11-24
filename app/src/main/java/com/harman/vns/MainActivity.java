@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
      * A function calling from JNI to update current timer
      */
     @Keep
-    private void updateTimer1(final String msg ) {
+    private void updateTimer(final String msg ) {
 
         Log.e("JniHandler1", "Native Err: " + msg);
 
@@ -127,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 String ticks = "" + MainActivity.this.hour + ":" +
                         MainActivity.this.minute + ":" +
                         MainActivity.this.second;
-                MainActivity.this.tickView.setText(msg + " " +ticks);
+                MainActivity.this.tickView.setText(msg);
+                //MainActivity.this.tickView.setText(msg + " " +ticks);
             }
         });
     }

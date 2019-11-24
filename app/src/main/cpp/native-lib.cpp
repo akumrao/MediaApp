@@ -10,7 +10,6 @@
 //#include "process.h"
 using namespace base;
 
-#include <android/log.h>
 
 #include <android/log.h>
 
@@ -182,6 +181,10 @@ void queryRuntimeInfo(JNIEnv *env, jobject instance) {
  *     the pairing function JNI_OnUnload() never gets called at all.
  */
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
+
+    Logger::instance().add(new ConsoleChannel("debug", Level::Trace));
+    LTrace("OnLoad");
+
     JNIEnv* env;
     memset(&g_ctx, 0, sizeof(g_ctx));
 
@@ -303,13 +306,132 @@ void*  UpdateTicks(void* context) {
  */
 
 
+class PingThread : public Thread {
+public:
+
+    PingThread(std::string host)  {
+
+        proc.args = {"ping", "-W",  "4", "-c", "15 ", host};
+    }
+    // virtual ~Thread2(void);
+
+    void run() {
+
+        LTrace("PingThread OnRun");
+
+        /////////////////////////////////////
+        TickContext *pctx = (TickContext*) &g_ctx;
+        JavaVM *javaVM = pctx->javaVM;
+        JNIEnv *env;
+        jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
+        if (res != JNI_OK) {
+            res = javaVM->AttachCurrentThread( &env, NULL);
+            if (JNI_OK != res) {
+                LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
+                return ;
+            }
+        }
+
+        jmethodID statusId = env->GetMethodID( pctx->jniHelperClz,
+                                               "updateStatus",
+                                               "(Ljava/lang/String;)V");
+        sendJavaMsg(env, pctx->jniHelperObj, statusId,
+                    "TickerThread status: initializing...");
+
+        // get mainActivity updateTimer function
+        jmethodID timerId = env->GetMethodID( pctx->mainActivityClz,
+                                              "updateTimer", "(Ljava/lang/String;)V");
+        //jmethodID timerId = (*env)->GetMethodID(env, pctx->mainActivityClz,
+        //                                        "updateTimer1", "()V");
+
+        struct timeval beginTime, curTime, usedTime, leftTime;
+        const struct timeval kOneSecond = {
+                (__kernel_time_t)1,
+                (__kernel_suseconds_t) 0
+        };
+
+        sendJavaMsg(env, pctx->jniHelperObj, statusId,
+                    "TickerThread status: start ticking ...");
+
+
+
+
+        ////////////////////////////////////
+
+        proc.onstdout = [&](std::string line) {
+
+
+            std::stringstream X(line);
+            std::string T;
+
+            while (std::getline(X, T, '\n')) {
+               // LTrace(T);
+
+                {
+                    gettimeofday(&beginTime, NULL);
+
+                    //(*env)->CallVoidMethod(env, pctx->mainActivityObj, timerId);
+
+                    sendJavaMsg(env, pctx->mainActivityObj, timerId, T.c_str()  );
+
+
+                    gettimeofday(&curTime, NULL);
+                    timersub(&curTime, &beginTime, &usedTime);
+                    timersub(&kOneSecond, &usedTime, &leftTime);
+                    struct timespec sleepTime;
+                    sleepTime.tv_sec = leftTime.tv_sec;
+                    sleepTime.tv_nsec = leftTime.tv_usec * 1000;
+
+                    if (sleepTime.tv_sec <= 1) {
+                        nanosleep(&sleepTime, NULL);
+                    } else {
+                        sendJavaMsg(env, pctx->jniHelperObj, statusId,
+                                    "TickerThread error: processing too long!");
+                    }
+                }
+            }
+
+
+        };
+        proc.onexit = [&](int64_t status) {
+            sendJavaMsg(env, pctx->jniHelperObj, statusId,
+                        "TickerThread status: ticking stopped");
+            javaVM->DetachCurrentThread();
+        };
+        proc.spawn();
+        uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+
+    }
+
+    void stop() {
+        LTrace("Ping Stop")
+        proc.kill();
+    }
+
+    Process proc;
+
+};
+
+PingThread *pingThread = nullptr;
+
 extern "C" JNIEXPORT void JNICALL
 Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstring jstr) {
 
 
+    LTrace("StartTicks");
 
+    const char *host = env->GetStringUTFChars(jstr , NULL ) ;
 
-    const char *path = env->GetStringUTFChars(jstr , NULL ) ;
+    if(!pingThread)
+    pingThread = new PingThread(host);
+    else
+        return ;
+
+    jclass clz = env->GetObjectClass(instance);
+    g_ctx.mainActivityClz = (jclass)env->NewGlobalRef( clz);
+    g_ctx.mainActivityObj = env->NewGlobalRef(instance);
+
+    pingThread->start();
 /*
  * proc.onstdout = [&](std::string line) {
         // std::cout << "process stdout: " << line << std::endl;
@@ -326,7 +448,7 @@ Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstri
     proc.spawn();
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 */
-
+/*
     pthread_t       threadInfo_;
     pthread_attr_t  threadAttr_;
 
@@ -345,6 +467,7 @@ Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstri
     pthread_attr_destroy(&threadAttr_);
 
     (void)result;
+    */
 }
 
 /*
@@ -354,7 +477,13 @@ Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstri
  */
 extern "C" JNIEXPORT void JNICALL
 Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
-    pthread_mutex_lock(&g_ctx.lock);
+
+
+    LTrace("Stop Ticks");
+
+   // pthread_mutex_lock(&g_ctx.lock);
+
+ /*
     g_ctx.done = 1;
     pthread_mutex_unlock(&g_ctx.lock);
 
@@ -365,6 +494,12 @@ Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
     while (g_ctx.done) {
         nanosleep(&sleepTime, NULL);
     }
+*/
+
+    pingThread->stop();
+
+    delete pingThread;
+    pingThread = nullptr;
 
     // release object we allocated from StartTicks() function
     env->DeleteGlobalRef( g_ctx.mainActivityClz);
@@ -372,5 +507,5 @@ Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
     g_ctx.mainActivityObj = NULL;
     g_ctx.mainActivityClz = NULL;
 
-    pthread_mutex_destroy(&g_ctx.lock);
+    //pthread_mutex_destroy(&g_ctx.lock);
 }
