@@ -18,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
     int minute = 0;
     int second = 0;
     TextView tickView;
-    private Button mButton;
-
+    private Button mButtonStop;
+    private Button mButtonStart;
 
 
     // Used to load the 'native-lib' library on application startup.
@@ -36,11 +36,21 @@ public class MainActivity extends AppCompatActivity {
         tickView = findViewById(R.id.tickView);
         tickView.setText(stringFromJNI());
 
-        mButton = findViewById(R.id.button);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mButtonStart = findViewById(R.id.buttonStart);
+        mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                // ping();
+                //tickView.setText(stringFromJNI());
+                startTicks("www.yahoo.com");
+            }
+        });
+
+        mButtonStop = findViewById(R.id.buttonStop);
+        mButtonStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ping();
                 //tickView.setText(stringFromJNI());
                 StopTicks();
             }
@@ -50,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     public  void ping()
     {
-
+/*
         try {
 
             Process shell = null;
@@ -85,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Log.d("PINGVALUE11", "ShellRoot#suExecute() finished with error", e);
         }
-
+*/
     }
     @Override
     public void onResume() {

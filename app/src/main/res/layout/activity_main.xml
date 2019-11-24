@@ -9,22 +9,19 @@
 
 
     <TextView
+        android:id="@+id/hellojniMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Hello World!"
-        android:id="@+id/hellojniMsg"
-        tools:layout_editor_absoluteX="129dp"
-        tools:layout_editor_absoluteY="222dp"
+        app:layout_constraintHorizontal_bias="0.547"
         app:layout_constraintLeft_toLeftOf="@+id/activity_hello_jnicallback"
-        tools:layout_constraintLeft_creator="0"
-        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
-        tools:layout_constraintTop_creator="0"
         app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
-        tools:layout_constraintRight_creator="0"
+        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
         tools:layout_constraintBottom_creator="0"
-        app:layout_constraintHorizontal_bias="0.42"
-        app:layout_constraintVertical_bias="0.45" />
-
+        tools:layout_constraintLeft_creator="0"
+        tools:layout_constraintRight_creator="0"
+        tools:layout_constraintTop_creator="0" />
 
     <TextView
         android:id="@+id/tickView"
@@ -43,7 +40,7 @@
         tools:layout_constraintTop_creator="0" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop"
@@ -54,6 +51,25 @@
         app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
         app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
         app:layout_constraintVertical_bias="0.128"
+        tools:layout_constraintBottom_creator="0"
+        tools:layout_constraintLeft_creator="0"
+        tools:layout_constraintRight_creator="0"
+        tools:layout_constraintTop_creator="0"
+        tools:visibility="visible" />
+
+
+    <Button
+        android:id="@+id/buttonStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/activity_hello_jnicallback"
+        app:layout_constraintHorizontal_bias="0.086"
+        app:layout_constraintLeft_toLeftOf="@+id/activity_hello_jnicallback"
+        app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
+        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
+        app:layout_constraintVertical_bias="0.027"
         tools:layout_constraintBottom_creator="0"
         tools:layout_constraintLeft_creator="0"
         tools:layout_constraintRight_creator="0"

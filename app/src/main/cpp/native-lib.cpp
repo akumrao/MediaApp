@@ -364,17 +364,18 @@ public:
             std::stringstream X(line);
             std::string T;
 
-            while (std::getline(X, T, '\n')) {
-               // LTrace(T);
+            while (!stopped() && std::getline(X, T, '\n')    ) {
 
                 {
+                     LTrace("Run While");
+
                     gettimeofday(&beginTime, NULL);
 
                     //(*env)->CallVoidMethod(env, pctx->mainActivityObj, timerId);
 
                     sendJavaMsg(env, pctx->mainActivityObj, timerId, T.c_str()  );
 
-
+/*
                     gettimeofday(&curTime, NULL);
                     timersub(&curTime, &beginTime, &usedTime);
                     timersub(&kOneSecond, &usedTime, &leftTime);
@@ -388,6 +389,8 @@ public:
                         sendJavaMsg(env, pctx->jniHelperObj, statusId,
                                     "TickerThread error: processing too long!");
                     }
+
+*/
                 }
             }
 
@@ -496,16 +499,18 @@ Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
     }
 */
 
-    pingThread->stop();
+   if( pingThread) {
+       pingThread->stop();
 
-    delete pingThread;
-    pingThread = nullptr;
+       delete pingThread;
+       pingThread = nullptr;
 
-    // release object we allocated from StartTicks() function
-    env->DeleteGlobalRef( g_ctx.mainActivityClz);
-    env->DeleteGlobalRef( g_ctx.mainActivityObj);
-    g_ctx.mainActivityObj = NULL;
-    g_ctx.mainActivityClz = NULL;
+       // release object we allocated from StartTicks() function
+       env->DeleteGlobalRef(g_ctx.mainActivityClz);
+       env->DeleteGlobalRef(g_ctx.mainActivityObj);
+       g_ctx.mainActivityObj = NULL;
+       g_ctx.mainActivityClz = NULL;
+   }
 
     //pthread_mutex_destroy(&g_ctx.lock);
 }
