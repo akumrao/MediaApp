@@ -7,7 +7,7 @@ import android.widget.*;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.util.Log;
-
+import androidx.annotation.Keep;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Example of a call to a native method
-        tickView = findViewById(R.id.sample_text);
+        tickView = findViewById(R.id.tickView);
         tickView.setText(stringFromJNI());
 
         mButton = findViewById(R.id.button);
@@ -41,16 +41,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                // ping();
-                tickView.setText(stringFromJNI());
+                //tickView.setText(stringFromJNI());
+                StopTicks();
             }
         });
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
 
     public  void ping()
     {
@@ -91,4 +87,59 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        hour = minute = second = 0;
+           ((TextView)findViewById(R.id.hellojniMsg)).setText(stringFromJNI());
+        startTicks("www.yahoo.com");
+    }
+
+    @Override
+    public void onPause () {
+        super.onPause();
+        StopTicks();
+    }
+
+
+
+
+    /*
+     * A function calling from JNI to update current timer
+     */
+    @Keep
+    private void updateTimer1(final String msg ) {
+
+        Log.e("JniHandler1", "Native Err: " + msg);
+
+        ++second;
+        if(second >= 60) {
+            ++minute;
+            second -= 60;
+            if(minute >= 60) {
+                ++hour;
+                minute -= 60;
+            }
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String ticks = "" + MainActivity.this.hour + ":" +
+                        MainActivity.this.minute + ":" +
+                        MainActivity.this.second;
+                MainActivity.this.tickView.setText(msg + " " +ticks);
+            }
+        });
+    }
+
+
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+
+
+    public native  String stringFromJNI();
+    public native void startTicks(String inPar);
+    public native void StopTicks();
 }

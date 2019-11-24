@@ -6,9 +6,9 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 
-include_directories(mediaserver/src/libuv/include mediaserver/src/libuv/src mediaserver/src/libuv/src/unix mediaserver/src/base/include)
+include_directories(./mediaserver/src/base/include ./mediaserver/src/libuv/include ./mediaserver/src/libuv/src ./mediaserver/src/libuv/src/unix )
 
-file(GLOB SOURCES "*.cpp"  "mediaserver/src/libuv/src/*.cpp" "mediaserver/src/libuv/src/unix/*.cpp" "mediaserver/src/base/src/*.cpp" )
+file(GLOB SOURCES "*.cpp"  "./mediaserver/src/libuv/src/*.cpp" "./mediaserver/src/libuv/src/unix/*.cpp" "./mediaserver/src/base/src/*.cpp" )
 #
 #file(GLOB SOURCES "*.cpp")
 
