@@ -360,14 +360,13 @@ public:
 
         proc.onstdout = [&](std::string line) {
 
-
             std::stringstream X(line);
             std::string T;
 
             while (!stopped() && std::getline(X, T, '\n')    ) {
 
                 {
-                     LTrace("Run While");
+                     LTrace( T );
 
                     gettimeofday(&beginTime, NULL);
 
@@ -408,7 +407,8 @@ public:
 
     void stop() {
         LTrace("Ping Stop")
-        proc.kill();
+        proc.kill(SIGINT);
+        sleep(1);
     }
 
     Process proc;
@@ -421,9 +421,11 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstring jstr) {
 
 
-    LTrace("StartTicks");
+
 
     const char *host = env->GetStringUTFChars(jstr , NULL ) ;
+
+    LTrace("StartTicks ",  host)
 
     if(!pingThread)
     pingThread = new PingThread(host);
@@ -502,6 +504,7 @@ Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
    if( pingThread) {
        pingThread->stop();
 
+       sleep(1);
        delete pingThread;
        pingThread = nullptr;
 

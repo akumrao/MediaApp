@@ -1,62 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     android:id="@+id/activity_hello_jnicallback"
     tools:context=".MainActivity">
 
 
-    <TextView
-        android:id="@+id/hellojniMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Hello World!"
-        app:layout_constraintHorizontal_bias="0.547"
+    <EditText
+        android:id="@+id/hostNameId"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="4dp"
+        android:background="@android:color/white"
+        tools:text="www.google.com"
+        android:hint="www.google.com"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/activity_hello_jnicallback"
         app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintBottom_creator="0"
         tools:layout_constraintLeft_creator="0"
         tools:layout_constraintRight_creator="0"
         tools:layout_constraintTop_creator="0" />
 
-    <TextView
-        android:id="@+id/tickView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00:00"
-        app:layout_constraintBottom_toBottomOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintHorizontal_bias="0.435"
-        app:layout_constraintLeft_toLeftOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintVertical_bias="0.41"
-        tools:layout_constraintBottom_creator="0"
-        tools:layout_constraintLeft_creator="0"
-        tools:layout_constraintRight_creator="0"
-        tools:layout_constraintTop_creator="0" />
 
     <Button
         android:id="@+id/buttonStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop"
+        android:enabled="false"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintHorizontal_bias="0.086"
-        app:layout_constraintLeft_toLeftOf="@+id/activity_hello_jnicallback"
         app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintVertical_bias="0.128"
+        app:layout_constraintTop_toBottomOf="@+id/hostNameId"
         tools:layout_constraintBottom_creator="0"
         tools:layout_constraintLeft_creator="0"
         tools:layout_constraintRight_creator="0"
         tools:layout_constraintTop_creator="0"
         tools:visibility="visible" />
-
 
     <Button
         android:id="@+id/buttonStart"
@@ -64,16 +51,44 @@
         android:layout_height="wrap_content"
         android:text="Start"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintHorizontal_bias="0.086"
         app:layout_constraintLeft_toLeftOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintRight_toRightOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintTop_toTopOf="@+id/activity_hello_jnicallback"
-        app:layout_constraintVertical_bias="0.027"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hostNameId"
         tools:layout_constraintBottom_creator="0"
         tools:layout_constraintLeft_creator="0"
         tools:layout_constraintRight_creator="0"
         tools:layout_constraintTop_creator="0"
         tools:visibility="visible" />
+
+<!--    <ScrollView-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/buttonStart">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical">-->
+
+    <TextView
+        android:id="@+id/displayId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:gravity="bottom"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonStart"
+        tools:layout_constraintBottom_creator="0"
+        tools:layout_constraintLeft_creator="0"
+        tools:layout_constraintRight_creator="0"
+        tools:layout_constraintTop_creator="0" />
+<!--        </LinearLayout>-->
+<!--    </ScrollView>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
