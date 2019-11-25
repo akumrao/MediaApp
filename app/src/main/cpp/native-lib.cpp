@@ -311,7 +311,7 @@ public:
 
     PingThread(std::string host)  {
 
-        proc.args = {"ping", "-W",  "4", "-c", "15 ", host};
+        proc.args = {"ping", "-W",  "4",  host};
     }
     // virtual ~Thread2(void);
 
