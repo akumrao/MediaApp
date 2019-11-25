@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/mediaserver"]
+	path = app/src/main/cpp/mediaserver
+	url = https://github.com/akumrao/mediaserver.git
