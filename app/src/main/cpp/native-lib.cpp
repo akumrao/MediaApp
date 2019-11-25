@@ -26,7 +26,7 @@ Java_com_harman_vns_MainActivity_stringFromJNI(
         JNIEnv *env,
         jobject /* this */) {
 
-      std::string hello = "Hello from C1++";
+      std::string hello = "Ping www.yahoo.com";
 
    // Logger::instance().add(new ConsoleChannel("debug", Level::Trace));
 
