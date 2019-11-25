@@ -408,7 +408,7 @@ public:
     void stop() {
         LTrace("Ping Stop")
         proc.kill(SIGINT);
-        sleep(1);
+       // sleep(1);
     }
 
     Process proc;
@@ -504,7 +504,7 @@ Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
    if( pingThread) {
        pingThread->stop();
 
-       sleep(1);
+      // sleep(1);
        delete pingThread;
        pingThread = nullptr;
 
