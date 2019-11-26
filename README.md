@@ -23,3 +23,17 @@ run app from Android Studio
 
 
 
+****************************************************************************************************************
+tool chain for ubuntu
+apt-get install clang-6.0
+
+apt-get install libc++-dev
+
+
+
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 1000
+
+
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 1000
+update-alternatives --config clang
+update-alternatives --config clang++
