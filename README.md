@@ -37,3 +37,5 @@ update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 1000
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 1000
 update-alternatives --config clang
 update-alternatives --config clang++
+
+apt-get install ninja
