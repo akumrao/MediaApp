@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
                 String host = mHostNameId.getText().toString();
                 if (host.isEmpty()) host = "www.google.com";
 
+
+                LocationJNI(10.1,10.0);
+
                 // ping();
                 //displayView.setText(stringFromJNI());
                 startTicks(host);
@@ -107,4 +110,5 @@ public class MainActivity extends AppCompatActivity {
     public native  String stringFromJNI();
     public native void startTicks(String hostName);
     public native void StopTicks();
+    public native void LocationJNI( double d1,  double d2);
 }

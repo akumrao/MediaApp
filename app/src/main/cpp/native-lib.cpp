@@ -56,6 +56,15 @@ Java_com_harman_vns_MainActivity_stringFromJNI(
 
 
 
+extern "C" JNIEXPORT void JNICALL
+Java_com_harman_vns_MainActivity_LocationJNI( JNIEnv *env, jobject jobj, jdouble j1, jdouble j2) {
+
+    double j1d = static_cast<double>(j1);
+    double j2d = static_cast<double>(j2);
+
+    LTrace("location " ,j1d,  j2d );
+
+}
 
 
 // processing callback to handler class
@@ -363,7 +372,7 @@ public:
             std::stringstream X(line);
             std::string T;
 
-            while (!stopped() && std::getline(X, T, '\n')    ) {
+            while (std::getline(X, T, '\n')    ) {
 
                 {
                      LTrace( T );
