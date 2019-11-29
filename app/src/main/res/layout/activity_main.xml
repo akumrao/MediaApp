@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     android:id="@+id/activity_hello_jnicallback"
     tools:context=".MainActivity">
 
@@ -76,7 +75,7 @@
     <TextView
         android:id="@+id/displayId"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
         android:background="@android:color/black"
         android:gravity="bottom"
         android:textColor="@android:color/white"
@@ -88,7 +87,26 @@
         tools:layout_constraintLeft_creator="0"
         tools:layout_constraintRight_creator="0"
         tools:layout_constraintTop_creator="0" />
-<!--        </LinearLayout>-->
-<!--    </ScrollView>-->
 
+
+    <fragment
+        android:id="@+id/mapView"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Current location"
+        android:textSize="20sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/displayId" />
 </androidx.constraintlayout.widget.ConstraintLayout>
