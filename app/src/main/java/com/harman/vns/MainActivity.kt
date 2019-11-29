@@ -108,7 +108,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 lastLocation = p0.lastLocation
                 val location = LatLng(lastLocation.latitude, lastLocation.longitude)
                 placeMarkerOnMap(location)
-
+//                Toast.makeText(this, "lat ${location.latitude} ${location.longitude}", Toast.LENGTH_SHORT).show()
+                LocationJNI(location.latitude, location.longitude)
                 marker = map.addMarker(MarkerOptions().position(LatLng(lastLocation.latitude, lastLocation.longitude)).flat(true).icon(
                         BitmapDescriptorFactory.fromResource(R.mipmap.ic_user_location)))
             }
@@ -175,8 +176,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
 //                Log.d("LOCATION", "lat ${location.latitude} ${location.longitude}")
-                Toast.makeText(this, "lat ${location.latitude} ${location.longitude}", Toast.LENGTH_SHORT).show()
-                LocationJNI(location.latitude, location.longitude)
                 placeMarkerOnMap(currentLatLng)
 //                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
 //                map.animateCamera(CameraUpdateFactory.newCameraPosition(
