@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -141,6 +142,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private external fun startTicks(hostName: String?)
     private external fun StopTicks()
+    private external fun LocationJNI(lat: Double, lng: Double)
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
@@ -172,11 +174,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
+//                Log.d("LOCATION", "lat ${location.latitude} ${location.longitude}")
+                Toast.makeText(this, "lat ${location.latitude} ${location.longitude}", Toast.LENGTH_SHORT).show()
+                LocationJNI(location.latitude, location.longitude)
                 placeMarkerOnMap(currentLatLng)
 //                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
-                map.animateCamera(CameraUpdateFactory.newCameraPosition(
-                        CameraPosition.Builder().target(
-                                currentLatLng).zoom(15.5f).build()))
+//                map.animateCamera(CameraUpdateFactory.newCameraPosition(
+//                        CameraPosition.Builder().target(
+//                                currentLatLng).zoom(15.5f).build()))
             }
         }
     }
