@@ -57,7 +57,9 @@ Java_com_harman_vns_MainActivity_stringFromJNI(
 
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_MainActivity_LocationJNI( JNIEnv *env, jobject jobj, jdouble j1, jdouble j2) {
+Java_com_harman_vns_ui_PingFragment_LocationJNI( JNIEnv *env, jobject jobj, jdouble j1, jdouble j2) {
+
+    //Logger::instance().add(new RemoteChannel("debug", Level::Trace, "10.99.234.126"));
 
     double j1d = static_cast<double>(j1);
     double j2d = static_cast<double>(j2);
@@ -142,7 +144,7 @@ void queryRuntimeInfo(JNIEnv *env, jobject instance) {
     // shared lib got loaded, we just directly use them
     //    static function does not need instance, so we just need to feed
     //    class and method id to JNI
-    jmethodID versionFunc = env->GetStaticMethodID(
+  /*  jmethodID versionFunc = env->GetStaticMethodID(
             g_ctx.jniHelperClz,
             "getBuildVersion", "()Ljava/lang/String;");
     if (!versionFunc) {
@@ -176,6 +178,7 @@ void queryRuntimeInfo(JNIEnv *env, jobject instance) {
     jlong result = env->CallLongMethod( instance, memFunc);
     LOGI("Runtime free memory size: %" PRId64, result);
     (void)result;  // silence the compiler warning
+    */
 }
 
 /*
@@ -431,7 +434,7 @@ public:
 PingThread *pingThread = nullptr;
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstring jstr) {
+Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,jstring jstr) {
 
 
 
@@ -494,7 +497,7 @@ Java_com_harman_vns_MainActivity_startTicks(JNIEnv *env, jobject instance ,jstri
  *    for a clean shutdown. The caller is from onPause
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_MainActivity_StopTicks(JNIEnv *env, jobject instance) {
+Java_com_harman_vns_ui_PingFragment_StopTicks(JNIEnv *env, jobject instance) {
 
 
     LTrace("Stop Ticks");

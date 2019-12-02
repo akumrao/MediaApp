@@ -70,7 +70,7 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         private const val REQUEST_CHECK_SETTINGS = 2
 
-        // Used to load the 'native-lib' library on application startup.
+       //  Used to load the 'native-lib' library on application startup.
         init {
             System.loadLibrary("native-lib")
         }
