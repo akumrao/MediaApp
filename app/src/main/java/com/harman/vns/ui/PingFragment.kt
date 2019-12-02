@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.Keep
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -266,5 +267,17 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         fusedLocationClient.requestLocationUpdates(locationRequest,
                 locationCallback,
                 null /* Looper */)
+    }
+
+    /*
+ * A function calling from JNI to update current timer
+ */
+    @Keep
+    private fun updateTimer(msg: String) {
+        activity?.runOnUiThread {
+            Log.e("JniHandler1", "Native Err: $msg")
+            val s = displayView.text.toString()
+            displayView.append("\n" + msg)
+        }
     }
 }
