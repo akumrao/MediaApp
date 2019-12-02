@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Vision Next</string>
+    <string name="label_ping">Ping Test</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_download">Download Test</string>
+    <string name="label_vision_next">Vison next</string>
+    <string name="welcome_desc">This application will be used for testing 5G network. !!</string>
 </resources>

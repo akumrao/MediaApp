@@ -3,11 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/pingFragment">
+    app:startDestination="@id/welcomeFragment">
 
     <fragment
         android:id="@+id/pingFragment"
         android:name="com.harman.vns.ui.PingFragment"
-        android:label="ping_fragment"
+        android:label="@string/label_ping"
         tools:layout="@layout/ping_fragment" />
+
+    <fragment
+        android:id="@+id/downloadFragment"
+        android:name="com.harman.vns.ui.DownloadFragment"
+        android:label="@string/label_download"
+        tools:layout="@layout/fragment_download" />
+
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.harman.vns.ui.WelcomeFragment"
+        android:label="@string/label_vision_next"
+        tools:layout="@layout/fragment_welcome" />
 </navigation>

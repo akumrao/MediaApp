@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/pingFragment"
+            android:title="@string/label_ping" />
+
+        <item
+            android:id="@+id/downloadFragment"
+            android:title="@string/label_download" />
+    </group>
+</menu>
