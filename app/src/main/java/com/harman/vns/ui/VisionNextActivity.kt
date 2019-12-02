@@ -15,6 +15,13 @@ import kotlinx.android.synthetic.main.activity_vison_next.toolbar
 
 class VisionNextActivity : AppCompatActivity() {
 
+    companion object {
+        // Used to load the 'native-lib' library on application startup.
+//        init {
+//            System.loadLibrary("native-lib")
+//        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vison_next)
