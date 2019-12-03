@@ -1,6 +1,7 @@
 package com.harman.vns.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -290,5 +291,14 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             val s = displayView.text.toString()
             displayView.append("\n" + msg)
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 }
