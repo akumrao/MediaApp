@@ -27,10 +27,12 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -43,7 +45,7 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     lateinit var mButtonStop: Button
     lateinit var mButtonStart: Button
     lateinit var mHostNameId: EditText
-
+    lateinit var mGeocoder: Geocoder
     private lateinit var googleMap: GoogleMap
 
     // 1
@@ -71,13 +73,18 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         private const val REQUEST_CHECK_SETTINGS = 2
 
-       //  Used to load the 'native-lib' library on application startup.
+        //  Used to load the 'native-lib' library on application startup.
         init {
             System.loadLibrary("native-lib")
         }
     }
 
     private lateinit var viewModel: PingViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mGeocoder = Geocoder(activity)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -117,12 +124,16 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
                 lastLocation = p0.lastLocation
                 val location = LatLng(lastLocation.latitude, lastLocation.longitude)
-                placeMarkerOnMap(location)
+//                placeMarkerOnMap(location)
 //                Toast.makeText(this, "lat ${location.latitude} ${location.longitude}", Toast.LENGTH_SHORT).show()
                 LocationJNI(location.latitude, location.longitude)
-                marker = googleMap.addMarker(MarkerOptions().position(LatLng(lastLocation.latitude,
-                        lastLocation.longitude)).flat(true).icon(
-                        BitmapDescriptorFactory.fromResource(R.mipmap.ic_user_location)))
+//                marker = googleMap.addMarker(MarkerOptions().position(LatLng(lastLocation.latitude,
+//                        lastLocation.longitude)).flat(true).icon(
+//                        BitmapDescriptorFactory.fromResource(R.mipmap.ic_user_location)))
+
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                        CameraPosition.Builder().target(
+                                location).zoom(15.5f).build()))
             }
         }
         createLocationRequest()
@@ -191,14 +202,14 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private fun getAddress(latLng: LatLng): String {
         // 1
-        val geocoder = Geocoder(activity)
+//        val geocoder = Geocoder(activity)
         val addresses: List<Address>?
         val address: Address?
         var addressText = ""
 
         try {
             // 2
-            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            addresses = mGeocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             // 3
             if (null != addresses && addresses.isNotEmpty()) {
                 address = addresses[0]
