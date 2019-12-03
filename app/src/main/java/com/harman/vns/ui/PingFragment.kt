@@ -300,5 +300,6 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onDetach() {
         super.onDetach()
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        StopTicks()
     }
 }
