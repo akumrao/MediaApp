@@ -1,25 +1,15 @@
-#include <jni.h>
-#include <string>
-#include <inttypes.h>
-#include <pthread.h>
 
 
-#include "base/process.h"
-#include "base/logger.h"
+#include "PingThread.h"
+TickContext g_ctx;
 
 //#include "process.h"
-using namespace base;
+
 
 
 #include <android/log.h>
 
-static const char* kTAG = "hello-jniCallback";
-#define LOGI(...) \
-  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
-#define LOGW(...) \
-  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
-#define LOGE(...) \
-  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
+
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_harman_vns_MainActivity_stringFromJNI(
@@ -28,26 +18,6 @@ Java_com_harman_vns_MainActivity_stringFromJNI(
 
       std::string hello = "Ping www.yahoo.com";
 
-   // Logger::instance().add(new ConsoleChannel("debug", Level::Trace));
-
-   // LDebug("On close")
-/*
-    Process proc{ "ping", "-W", "4" , "-c",  "5", "www.google.com" };
-    proc.onstdout = [&](std::string line) {
-       // std::cout << "process stdout: " << line << std::endl;
-        //gotStdout = true;
-        LOGE("Failed to AttachCurrentThread, ErrorCode = %s", line.c_str());
-        proc.kill();
-        //str << line;
-    };
-    proc.onexit = [&](int64_t status) {
-       // std::cout << "process exit: " << status << std::endl;
-        //gotExit = true;
-        LOGE("Failed to AttachCurrentThread, ErrorCode = %d", status);
-    };
-    proc.spawn();
-    uv_run(uv_default_loop(), UV_RUN_DEFAULT);
-*/
 
     LOGE("Failed to AttachCurrentThread, ErrorCode = %d", 100);
 
@@ -69,17 +39,9 @@ Java_com_harman_vns_ui_PingFragment_LocationJNI( JNIEnv *env, jobject jobj, jdou
 }
 
 
-// processing callback to handler class
-typedef struct tick_context {
-    JavaVM  *javaVM;
-    jclass   jniHelperClz;
-    jobject  jniHelperObj;
-    jclass   mainActivityClz;
-    jobject  mainActivityObj;
-    pthread_mutex_t  lock;
-    int      done;
-} TickContext;
-TickContext g_ctx;
+
+
+
 
 
 
@@ -88,7 +50,13 @@ TickContext g_ctx;
 
 /* This is a trivial JNI example where we use a native method
  * to return a new VM String. See the corresponding Java source
- * file located at:
+ * file located astatic const char* kTAG = "hello-jniCallback";
+#define LOGI(...) \
+  ((void)__android_log_print(ANDROID_LOG_INFO, kTAG, __VA_ARGS__))
+#define LOGW(...) \
+  ((void)__android_log_print(ANDROID_LOG_WARN, kTAG, __VA_ARGS__))
+#define LOGE(...) \
+  ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))t:
  *
  *   hello-jniCallback/app/src/main/java/com/example/hellojnicallback/MainActivity.java
  */
@@ -322,114 +290,7 @@ void*  UpdateTicks(void* context) {
  */
 
 
-class PingThread : public Thread {
-public:
 
-    PingThread(std::string host)  {
-
-        proc.args = {"ping", "-W",  "4",  host};
-    }
-    // virtual ~Thread2(void);
-
-    void run() {
-
-        LTrace("PingThread OnRun");
-
-        /////////////////////////////////////
-        TickContext *pctx = (TickContext*) &g_ctx;
-        JavaVM *javaVM = pctx->javaVM;
-        JNIEnv *env;
-        jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
-        if (res != JNI_OK) {
-            res = javaVM->AttachCurrentThread( &env, NULL);
-            if (JNI_OK != res) {
-                LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
-                return ;
-            }
-        }
-
-        jmethodID statusId = env->GetMethodID( pctx->jniHelperClz,
-                                               "updateStatus",
-                                               "(Ljava/lang/String;)V");
-        sendJavaMsg(env, pctx->jniHelperObj, statusId,
-                    "TickerThread status: initializing...");
-
-        // get mainActivity updateTimer function
-        jmethodID timerId = env->GetMethodID( pctx->mainActivityClz,
-                                              "updateTimer", "(Ljava/lang/String;)V");
-        //jmethodID timerId = (*env)->GetMethodID(env, pctx->mainActivityClz,
-        //                                        "updateTimer1", "()V");
-
-        struct timeval beginTime, curTime, usedTime, leftTime;
-        const struct timeval kOneSecond = {
-                (__kernel_time_t)1,
-                (__kernel_suseconds_t) 0
-        };
-
-        sendJavaMsg(env, pctx->jniHelperObj, statusId,
-                    "TickerThread status: start ticking ...");
-
-
-
-
-        ////////////////////////////////////
-
-        proc.onstdout = [&](std::string line) {
-
-            std::stringstream X(line);
-            std::string T;
-
-            while (std::getline(X, T, '\n')    ) {
-
-                {
-                     LTrace( T );
-
-                    gettimeofday(&beginTime, NULL);
-
-                    //(*env)->CallVoidMethod(env, pctx->mainActivityObj, timerId);
-
-                    sendJavaMsg(env, pctx->mainActivityObj, timerId, T.c_str()  );
-
-/*
-                    gettimeofday(&curTime, NULL);
-                    timersub(&curTime, &beginTime, &usedTime);
-                    timersub(&kOneSecond, &usedTime, &leftTime);
-                    struct timespec sleepTime;
-                    sleepTime.tv_sec = leftTime.tv_sec;
-                    sleepTime.tv_nsec = leftTime.tv_usec * 1000;
-
-                    if (sleepTime.tv_sec <= 1) {
-                        nanosleep(&sleepTime, NULL);
-                    } else {
-                        sendJavaMsg(env, pctx->jniHelperObj, statusId,
-                                    "TickerThread error: processing too long!");
-                    }
-
-*/
-                }
-            }
-
-
-        };
-        proc.onexit = [&](int64_t status) {
-            sendJavaMsg(env, pctx->jniHelperObj, statusId,
-                        "TickerThread status: ticking stopped");
-            javaVM->DetachCurrentThread();
-        };
-        proc.spawn();
-        uv_run(uv_default_loop(), UV_RUN_DEFAULT);
-
-    }
-
-    void stop() {
-        LTrace("Ping Stop")
-        proc.kill(SIGINT);
-       // sleep(1);
-    }
-
-    Process proc;
-
-};
 
 PingThread *pingThread = nullptr;
 
@@ -439,12 +300,13 @@ Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,js
 
 
 
-    const char *host = env->GetStringUTFChars(jstr , NULL ) ;
+    const char *c_cmd = env->GetStringUTFChars(jstr , NULL ) ;
+    std::string cmd = c_cmd;
 
-    LTrace("StartTicks ",  host)
+    LTrace("StartTicks ",  cmd)
 
     if(!pingThread)
-    pingThread = new PingThread(host);
+    pingThread = new PingThread(cmd);
     else
         return ;
 
@@ -453,42 +315,7 @@ Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,js
     g_ctx.mainActivityObj = env->NewGlobalRef(instance);
 
     pingThread->start();
-/*
- * proc.onstdout = [&](std::string line) {
-        // std::cout << "process stdout: " << line << std::endl;
-        //gotStdout = true;
-        LOGE("Failed to AttachCurrentThread, ErrorCode = %s", line.c_str());
-        proc.kill();
-        //str << line;
-    };
-    proc.onexit = [&](int64_t status) {
-        // std::cout << "process exit: " << status << std::endl;
-        //gotExit = true;
-        LOGE("Failed to AttachCurrentThread, ErrorCode = %d", status);
-    };
-    proc.spawn();
-    uv_run(uv_default_loop(), UV_RUN_DEFAULT);
-*/
-/*
-    pthread_t       threadInfo_;
-    pthread_attr_t  threadAttr_;
 
-    pthread_attr_init(&threadAttr_);
-    pthread_attr_setdetachstate(&threadAttr_, PTHREAD_CREATE_DETACHED);
-
-    pthread_mutex_init(&g_ctx.lock, NULL);
-
-    jclass clz = env->GetObjectClass(instance);
-    g_ctx.mainActivityClz = (jclass)env->NewGlobalRef( clz);
-    g_ctx.mainActivityObj = env->NewGlobalRef(instance);
-
-    int result  = pthread_create( &threadInfo_, &threadAttr_, UpdateTicks, &g_ctx);
-    assert(result == 0);
-
-    pthread_attr_destroy(&threadAttr_);
-
-    (void)result;
-    */
 }
 
 /*
