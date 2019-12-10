@@ -1,26 +1,18 @@
 
 
 #include "PingThread.h"
+#include "Download.h"
+
 TickContext g_ctx;
-
-//#include "process.h"
-
 
 
 #include <android/log.h>
 
-
-
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_harman_vns_MainActivity_stringFromJNI(
-        JNIEnv *env,
-        jobject /* this */) {
+Java_com_harman_vns_MainActivity_stringFromJNI(  JNIEnv *env, jobject /* this */) {
 
-      std::string hello = "Ping www.yahoo.com";
-
-
+    std::string hello = "Ping www.yahoo.com";
     LOGE("Failed to AttachCurrentThread, ErrorCode = %d", 100);
-
     return env->NewStringUTF(hello.c_str());
 }
 
@@ -37,13 +29,6 @@ Java_com_harman_vns_ui_PingFragment_LocationJNI( JNIEnv *env, jobject jobj, jdou
     LTrace("location " ,j1d,  j2d );
 
 }
-
-
-
-
-
-
-
 
 
 
@@ -202,8 +187,6 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
 void   sendJavaMsg(JNIEnv *env, jobject instance,
                    jmethodID func,const char* msg) {
 
-
-
     jstring javaMsg = env->NewStringUTF( msg);
     env->CallVoidMethod( instance, func, javaMsg);
     env->DeleteLocalRef( javaMsg);
@@ -291,24 +274,37 @@ void*  UpdateTicks(void* context) {
 
 
 
+Thread *pingThread = nullptr;
 
-PingThread *pingThread = nullptr;
+
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,jstring jstr) {
+Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,jstring jcmd , jstring jurl ) {
 
 
-
-
-    const char *c_cmd = env->GetStringUTFChars(jstr , NULL ) ;
+    const char *c_cmd = env->GetStringUTFChars(jcmd, NULL);
     std::string cmd = c_cmd;
 
-    LTrace("StartTicks ",  cmd)
+    const char *c_url = env->GetStringUTFChars(jurl, NULL);
+    std::string url = c_url;
 
-    if(!pingThread)
-    pingThread = new PingThread(cmd);
+
+    LTrace("StartTicks ", cmd )
+
+    LTrace("StartTicks ", url )
+
+    if (!pingThread)
+    {
+        if( cmd == std::string("Download" ))
+
+            pingThread = new Download(url);
+        else
+            pingThread = new PingThread(url);
+    }
     else
         return ;
+
+
 
     jclass clz = env->GetObjectClass(instance);
     g_ctx.mainActivityClz = (jclass)env->NewGlobalRef( clz);
@@ -328,21 +324,6 @@ Java_com_harman_vns_ui_PingFragment_StopTicks(JNIEnv *env, jobject instance) {
 
 
     LTrace("Stop Ticks");
-
-   // pthread_mutex_lock(&g_ctx.lock);
-
- /*
-    g_ctx.done = 1;
-    pthread_mutex_unlock(&g_ctx.lock);
-
-    // waiting for ticking thread to flip the done flag
-    struct timespec sleepTime;
-    memset(&sleepTime, 0, sizeof(sleepTime));
-    sleepTime.tv_nsec = 100000000;
-    while (g_ctx.done) {
-        nanosleep(&sleepTime, NULL);
-    }
-*/
 
    if( pingThread) {
        pingThread->stop();
