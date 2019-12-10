@@ -22,9 +22,11 @@ void Download::stop(bool flag ) {
 
     LTrace("Ping Stop")
 
-    conn->clientConn->Close();
-    delete conn;
-    conn = nullptr;
+    if(conn ) {
+        conn->clientConn->Close();
+        delete conn;
+        conn = nullptr;
+    }
 
 }
 
@@ -74,8 +76,8 @@ void Download::run() {
             (__kernel_suseconds_t) 0
     };
 
-    sendJavaMsg(env, pctx->jniHelperObj, statusId,
-                "TickerThread status: start ticking ...");
+   // sendJavaMsg(env, pctx->jniHelperObj, statusId,
+     //           "TickerThread status: start ticking ...");
 
 
 
@@ -93,6 +95,16 @@ void Download::run() {
     conn->clientConn->fnComplete = [&](const Response & response) {
         std::cout << "Lerver response:";
     };
+
+    conn->clientConn->fnLoad = [&](const std::string &str) {
+
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str()  );
+
+    //    jstring javaMsg = env->NewStringUTF( msg);
+     //   env->CallVoidMethod( instance, func, javaMsg);
+       // env->DeleteLocalRef( javaMsg);
+
+    };
     conn->clientConn->_request.setMethod("GET");
     conn->clientConn->_request.setKeepAlive(false);
     conn->clientConn->setReadStream(new std::ofstream(path, std::ios_base::out | std::ios_base::binary));
@@ -100,8 +112,13 @@ void Download::run() {
 
     app.run();
 
+    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{Download done}"  );
+
+
     //expect(fs::exists(path));
     //expect(crypto::checksum("MD5", path) == "44d667c142d7cda120332623eab69f40");
     //fs::unlink(path);
+
+    stop();
 
 }
