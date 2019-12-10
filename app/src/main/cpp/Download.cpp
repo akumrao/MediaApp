@@ -3,34 +3,45 @@
 //
 
 
-#include "PingThread.h"
-#include <string>
+#include "Download.h"
+#include "base/application.h"
+#include "base/filesystem.h"
 
 extern TickContext g_ctx;
 
+void sendJavaMsg(JNIEnv *env, jobject instance,  jmethodID func,const char* msg);
 
+Download::Download(std::string url): url(url) {
 
-
-void   sendJavaMsg(JNIEnv *env, jobject instance,  jmethodID func,const char* msg);
-
-
-
-PingThread::PingThread(std::string host)  {
-
-    proc.args = {"ping", "-W",  "4",  host};
+    if(!conn)
+    conn =  new Client("http://zlib.net/fossils/zlib-1.2.8.tar.gz");
 }
 
-void PingThread::stop(bool flag ) {
+
+void Download::stop(bool flag ) {
+
     LTrace("Ping Stop")
-    proc.kill(SIGINT);
-    // sleep(1);
-    exit = flag;
+
+    conn->clientConn->Close();
+    delete conn;
+    conn = nullptr;
+
 }
 
 
-void PingThread::run() {
+Download::~Download()
+{
+    if(conn )
+    {
+        conn->clientConn->Close();
+        delete conn;
+        conn = nullptr;
+    }
+}
 
-    LTrace("PingThread OnRun");
+void Download::run() {
+
+    LTrace("Download OnRun");
 
     /////////////////////////////////////
     TickContext *pctx = (TickContext*) &g_ctx;
@@ -71,34 +82,26 @@ void PingThread::run() {
 
     ////////////////////////////////////
 
-    proc.onstdout = [&](std::string line) {
+    Application app;
 
-        std::stringstream X(line);
-        std::string T;
-
-        while (std::getline(X, T, '\n')    ) {
-
-            {
-                LTrace( T );
-
-                gettimeofday(&beginTime, NULL);
-
-                //(*env)->CallVoidMethod(env, pctx->mainActivityObj, timerId);
-
-                sendJavaMsg(env, pctx->mainActivityObj, timerId, T.c_str()  );
+    std::string path("./");
+    fs::addnode(path, "zlib-1.2.8.tar.gz");
 
 
-            }
-        }
-
-
+    //Client *conn = new Client("http://zlib.net/index.html");
+    conn->start();
+    conn->clientConn->fnComplete = [&](const Response & response) {
+        std::cout << "Lerver response:";
     };
-    proc.onexit = [&](int64_t status) {
-        sendJavaMsg(env, pctx->jniHelperObj, statusId,
-                    "TickerThread status: ticking stopped");
-        javaVM->DetachCurrentThread();
-    };
-    proc.spawn();
-    uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+    conn->clientConn->_request.setMethod("GET");
+    conn->clientConn->_request.setKeepAlive(false);
+    conn->clientConn->setReadStream(new std::ofstream(path, std::ios_base::out | std::ios_base::binary));
+    conn->clientConn->send();
+
+    app.run();
+
+    //expect(fs::exists(path));
+    //expect(crypto::checksum("MD5", path) == "44d667c142d7cda120332623eab69f40");
+    //fs::unlink(path);
 
 }
