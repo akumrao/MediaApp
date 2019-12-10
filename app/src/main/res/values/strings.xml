@@ -7,4 +7,10 @@
     <string name="label_download">Download Test</string>
     <string name="label_vision_next">Vison next</string>
     <string name="welcome_desc">This application will be used for testing 5G network. !!</string>
+    <string name="selected_item">Selected item:</string>
+
+    <string-array name="filesize">
+        <item>500 MB</item>
+        <item>1 GB</item>
+    </string-array>
 </resources>
