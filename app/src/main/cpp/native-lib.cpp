@@ -276,6 +276,41 @@ void*  UpdateTicks(void* context) {
 
 Thread *pingThread = nullptr;
 
+extern "C" JNIEXPORT void JNICALL
+Java_com_harman_vns_ui_DownloadFragment_startTicks(JNIEnv *env, jobject instance ,jstring jcmd , jstring jurl ) {
+
+
+    const char *c_cmd = env->GetStringUTFChars(jcmd, NULL);
+    std::string cmd = c_cmd;
+
+    const char *c_url = env->GetStringUTFChars(jurl, NULL);
+    std::string url = c_url;
+
+
+    LTrace("StartTicks ", cmd )
+
+    LTrace("StartTicks ", url )
+
+    if (!pingThread)
+    {
+        if( cmd == std::string("Download" ))
+
+            pingThread = new Download(url);
+        else
+            pingThread = new PingThread(url);
+    }
+    else
+        return ;
+
+
+
+    jclass clz = env->GetObjectClass(instance);
+    g_ctx.mainActivityClz = (jclass)env->NewGlobalRef( clz);
+    g_ctx.mainActivityObj = env->NewGlobalRef(instance);
+
+    pingThread->start();
+
+}
 
 
 extern "C" JNIEXPORT void JNICALL

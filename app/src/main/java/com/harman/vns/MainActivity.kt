@@ -58,15 +58,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var lastLocation: Location
     lateinit var marker: Marker
 
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
         private const val REQUEST_CHECK_SETTINGS = 2
 
-        // Used to load the 'native-lib' library on application startup.
-//        init {
-//            System.loadLibrary("native-lib")
-//        }
+        //  Used to load the 'native-lib' library on application startup.
+        init {
+            System.loadLibrary("native-lib")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

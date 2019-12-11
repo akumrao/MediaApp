@@ -64,7 +64,7 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      */
     external fun stringFromJNI(): String?
 
-    private external fun startTicks(hostName: String?)
+    private external fun startTicks(cmd: String?, hostName: String?)
     private external fun StopTicks()
     private external fun LocationJNI(lat: Double, lng: Double)
 
@@ -109,7 +109,7 @@ class PingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             displayView.text = null
             var host = mHostNameId.text.toString()
             if (host.isEmpty()) host = "www.google.com"
-            startTicks(host)
+            startTicks("Ping", host)
         })
         mButtonStop = view.findViewById(R.id.buttonStop)
         mButtonStop.setOnClickListener(View.OnClickListener {

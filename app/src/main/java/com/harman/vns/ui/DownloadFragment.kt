@@ -2,6 +2,7 @@ package com.harman.vns.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,20 +11,33 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import com.harman.vns.R
 
 class DownloadFragment : Fragment() {
-
-    private external fun startTicks(name: String?)
-    private external fun StopTicks()
 
     lateinit var rootView: View
     lateinit var spinner: Spinner
     lateinit var serverUrlId: TextView
     lateinit var filesizes:Array<String>
 
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+    external fun stringFromJNI(): String?
 
+    private external fun startTicks(cmd: String?, hostName: String?)
+    private external fun StopTicks()
+    private external fun LocationJNI(lat: Double, lng: Double)
+
+    companion object {
+        //  Used to load the 'native-lib' library on application startup.
+        init {
+            System.loadLibrary("native-lib")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +70,24 @@ class DownloadFragment : Fragment() {
                 Toast.makeText(activity,
                         getString(R.string.selected_item) + " " +
                                 "" + filesizes[position], Toast.LENGTH_SHORT).show()
+                startTicks("Download", serverUrlId.text.toString())
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // write code to perform some action
             }
+        }
+    }
+
+    /*
+* A function calling from JNI to update current timer
+*/
+    @Keep
+    private fun updateTimer(msg: String) {
+        activity?.runOnUiThread {
+            Log.d("JniHandler1", "download speed: $msg")
+//            val s = displayView.text.toString()
+//            displayView.append("\n" + msg)
         }
     }
 
