@@ -332,11 +332,15 @@ Java_com_harman_vns_ui_PingFragment_StopTicks(JNIEnv *env, jobject instance) {
        delete pingThread;
        pingThread = nullptr;
 
+       LTrace("pingThread delete over");
+
        // release object we allocated from StartTicks() function
        env->DeleteGlobalRef(g_ctx.mainActivityClz);
        env->DeleteGlobalRef(g_ctx.mainActivityObj);
        g_ctx.mainActivityObj = NULL;
        g_ctx.mainActivityClz = NULL;
+
+       LTrace("Stop Ticks over");
    }
 
     //pthread_mutex_destroy(&g_ctx.lock);
