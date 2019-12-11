@@ -10,7 +10,7 @@
 #include <string>
 #include "net/netInterface.h"
 #include "http/client.h"
-
+#include "base/application.h"
 using namespace base;
 using namespace net;
 
@@ -21,18 +21,17 @@ public:
 
     ~Download();
 
-    // Download(){};
-    // virtual ~Thread2(void);
 
     void run();
 
     void stop(bool flag = true);
 
+    URL _url;
+    ClientConnecton *client{nullptr};
 
-    std::string url;
-
-    Client *conn={nullptr};
+    Application app;
 
 };
+
 
 #endif //MEDIAAPP_Download_H
