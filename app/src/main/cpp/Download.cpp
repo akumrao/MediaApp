@@ -12,12 +12,10 @@ extern TickContext g_ctx;
 
 void sendJavaMsg(JNIEnv *env, jobject instance,  jmethodID func,const char* msg);
 
-Download::Download(std::string url)  {
+Download::Download(std::string url):_url(url)  {
 
     if(!client)
     {
-         if( url.empty())
-            _url = "http://speedtest.tele2.net/1GB.zip";
 
         if (_url.scheme() == "http" || _url.scheme() == "ws") {
             client = new HttpClient(nullptr, _url, HTTP_RESPONSE, 20480000000);
