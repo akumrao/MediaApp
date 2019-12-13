@@ -4,13 +4,17 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="label_download">Download Test</string>
+    <string name="label_download">http Test</string>
     <string name="label_vision_next">Vison next</string>
     <string name="welcome_desc">This application will be used for testing 5G network. !!</string>
     <string name="selected_item">Selected item:</string>
+    <string name="start_download">start download</string>
+    <string name="stop_download">stop download</string>
+    <string name="download">Download</string>
 
     <string-array name="filesize">
-        <item>500 MB</item>
-        <item>1 GB</item>
+        <item>10MB</item>
+        <item>100MB</item>
+        <item>1GB</item>
     </string-array>
 </resources>

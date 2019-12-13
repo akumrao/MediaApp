@@ -34,22 +34,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Enter Server URL"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/space">
+        app:layout_constraintTop_toBottomOf="@+id/textView6">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/serverUrlId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=" http://zlib.net/fossils/zlib-1.2.8.tar.gz"/>
+            android:text=" http://zlib.net/fossils/zlib-1.2.8.tar.gz" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/startDownload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Download"
+        android:text="@string/start_download"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/fileSizeSpinnerId" />
 
@@ -111,6 +112,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView5"
         app:layout_constraintStart_toEndOf="@+id/textView5"
         app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/download"
+        android:textSize="20sp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/space" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

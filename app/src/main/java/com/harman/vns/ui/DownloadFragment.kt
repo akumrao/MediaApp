@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import com.harman.vns.R
+import com.harman.vns.utils.DownloadSize
 import org.json.JSONObject
 
 
@@ -24,7 +25,7 @@ class DownloadFragment : Fragment() {
     lateinit var spinner: Spinner
     lateinit var serverUrlId: TextView
     lateinit var filesizes: Array<String>
-    lateinit var startDownload: Button
+    lateinit var download: Button
     lateinit var throughputValue: TextView
     lateinit var latencyValue: TextView
     /**
@@ -62,12 +63,18 @@ class DownloadFragment : Fragment() {
         spinner = rootView.findViewById(R.id.fileSizeSpinnerId)
         serverUrlId = rootView.findViewById(R.id.serverUrlId)
         filesizes = resources.getStringArray(R.array.filesize)
-        startDownload = rootView.findViewById(R.id.startDownload)
+        download = rootView.findViewById(R.id.startDownload)
         throughputValue = rootView.findViewById(R.id.throughputValue)
         latencyValue = rootView.findViewById(R.id.latencyValue)
 
-        startDownload.setOnClickListener {
-            startTicks("Download", serverUrlId.text.toString())
+        download.setOnClickListener {
+            if (download.text == resources.getString(R.string.start_download)) {
+                download.text = resources.getString(R.string.stop_download)
+                startTicks("Download", serverUrlId.text.toString())
+            } else if (download.text == resources.getString(R.string.stop_download)) {
+                download.text = resources.getString(R.string.start_download)
+                StopTicks()
+            }
         }
 
         val adapter = activity?.let {
@@ -81,10 +88,8 @@ class DownloadFragment : Fragment() {
                 parent: AdapterView<*>,
                 view: View, position: Int, id: Long
             ) {
-                Toast.makeText(activity,
-                        getString(R.string.selected_item) + " " +
-                                "" + filesizes[position], Toast.LENGTH_SHORT).show()
-//                startTicks("Download", serverUrlId.text.toString())
+                val size = "_${filesizes[position]}"
+                serverUrlId.text = DownloadSize.valueOf(size).url
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -105,8 +110,10 @@ class DownloadFragment : Fragment() {
                 throughputValue.text = json.getString("dowloadspeed_kbps")
                 Log.d("JniHandler1", "download speed: $json")
             } catch (e: Exception) {
-                if (e.localizedMessage.contains("Download done"))
+                if (e.localizedMessage.contains("Download done")) {
+                    StopTicks()
                     Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
+                }
                 e.printStackTrace()
             }
 //            val s = displayView.text.toString()
