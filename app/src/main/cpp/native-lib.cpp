@@ -23,10 +23,12 @@ Java_com_harman_vns_ui_PingFragment_LocationJNI( JNIEnv *env, jobject jobj, jdou
 
     //Logger::instance().add(new RemoteChannel("debug", Level::Trace, "10.99.234.126"));
 
+    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "192.168.0.2"));
+
     double j1d = static_cast<double>(j1);
     double j2d = static_cast<double>(j2);
 
-    LTrace("location " ,j1d,  j2d );
+    LTrace("location " ,j1d, " , ", j2d );
 
 }
 
@@ -147,7 +149,7 @@ void queryRuntimeInfo(JNIEnv *env, jobject instance) {
  */
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
 
-    Logger::instance().add(new RemoteChannel("debug", Level::Trace, "10.99.234.126"));
+    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "192.168.0.2"));
 
     //Logger::instance().add(new ConsoleChannel("debug", Level::Trace ));
 
