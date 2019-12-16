@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +18,7 @@ import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import com.harman.vns.R
 import com.harman.vns.utils.DownloadSize
+import com.harman.vns.utils.TransferType
 import org.json.JSONObject
 
 
@@ -25,9 +28,11 @@ class DownloadFragment : Fragment() {
     lateinit var spinner: Spinner
     lateinit var serverUrlId: TextView
     lateinit var filesizes: Array<String>
-    lateinit var download: Button
+    lateinit var toggleStart: Button
     lateinit var throughputValue: TextView
     lateinit var latencyValue: TextView
+    lateinit var transferType: RadioGroup
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
@@ -43,6 +48,11 @@ class DownloadFragment : Fragment() {
         init {
             System.loadLibrary("native-lib")
         }
+
+        //0-> DOWNLOAD
+        //1 -> UPLOAD
+        //2-> BOTH
+        var DOWNLOAD_TYPE = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,16 +73,33 @@ class DownloadFragment : Fragment() {
         spinner = rootView.findViewById(R.id.fileSizeSpinnerId)
         serverUrlId = rootView.findViewById(R.id.serverUrlId)
         filesizes = resources.getStringArray(R.array.filesize)
-        download = rootView.findViewById(R.id.startDownload)
+        toggleStart = rootView.findViewById(R.id.startDownload)
         throughputValue = rootView.findViewById(R.id.throughputValue)
         latencyValue = rootView.findViewById(R.id.latencyValue)
+        transferType = rootView.findViewById(R.id.radioGroup)
 
-        download.setOnClickListener {
-            if (download.text == resources.getString(R.string.start_download)) {
-                download.text = resources.getString(R.string.stop_download)
-                startTicks("Download", serverUrlId.text.toString())
-            } else if (download.text == resources.getString(R.string.stop_download)) {
-                download.text = resources.getString(R.string.start_download)
+        transferType.setOnCheckedChangeListener { radioGroup, index ->
+            DOWNLOAD_TYPE = TransferType.valueOf(resources.getResourceEntryName(index).toString()).index
+        }
+
+        toggleStart.setOnClickListener {
+            if (toggleStart.text == resources.getString(R.string.start)) {
+                if (DOWNLOAD_TYPE == 0) {
+                    toggleStart.text = resources.getString(R.string.stop)
+                    startTicks("Download", serverUrlId.text.toString())
+                } else if (DOWNLOAD_TYPE == 1) {
+                    //TODO: API not available display toast
+                    Toast.makeText(activity,
+                            "upload data transfer Under development",
+                            Toast.LENGTH_SHORT).show()
+                } else {
+                    //TODO: API not available display toast
+                    Toast.makeText(activity,
+                            "bi - directional data transfer Under development",
+                            Toast.LENGTH_SHORT).show()
+                }
+            } else if (toggleStart.text == resources.getString(R.string.stop)) {
+                toggleStart.text = resources.getString(R.string.start)
                 StopTicks()
             }
         }
@@ -112,12 +139,11 @@ class DownloadFragment : Fragment() {
             } catch (e: Exception) {
                 if (e.localizedMessage.contains("Download done")) {
                     StopTicks()
+                    toggleStart.text = resources.getString(R.string.start)
                     Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
                 }
                 e.printStackTrace()
             }
-//            val s = displayView.text.toString()
-//            displayView.append("\n" + msg)
         }
     }
 

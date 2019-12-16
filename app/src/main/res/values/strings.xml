@@ -11,6 +11,10 @@
     <string name="start_download">start download</string>
     <string name="stop_download">stop download</string>
     <string name="download">Download</string>
+    <string name="upload">Upload</string>
+    <string name="start">start</string>
+    <string name="stop">stop</string>
+    <string name="bidirectional">bi - directional</string>
 
     <string-array name="filesize">
         <item>10MB</item>
