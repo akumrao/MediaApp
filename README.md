@@ -2,7 +2,10 @@
 Android App for Webrtc media, RTP, SRTP, Network test, TCP, UDP, Ping, HTTP
 
 To build source code
-git clone https://github.com/akumrao/MediaApp.git
+git clone --recursive https://github.com/akumrao/MediaApp.git
+
+for git 2.3 later
+git clone --recurse-submodules https://github.com/akumrao/MediaApp.git
 
 git submodule update --init
 
@@ -39,3 +42,29 @@ update-alternatives --config clang
 update-alternatives --config clang++
 
 apt-get install ninja
+
+
+
+***********************************************************************************************************************
+
+./emulator -writable-system  -netdelay none -netspeed full -avd Pixel_2_API_28 
+
+./emulator -writable-system  -selinux permissive -avd  Pixel_3_XL_API_27 -selinux permissive
+
+adb root
+
+adb remount
+
+mount -o rw,remount /system
+
+**************************************************************************************************************
+
+For windows
+
+Install NDK if missing at Andriod Studio
+
+if you get compilation error at NDK
+
+rm -rf app/.cxx/
+
+./gradlew clean
