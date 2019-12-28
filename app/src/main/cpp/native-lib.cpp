@@ -3,6 +3,7 @@
 #include "PingThread.h"
 #include "Download.h"
 #include "Upload.h"
+#include "Speed.h"
 
 TickContext g_ctx;
 
@@ -300,8 +301,10 @@ void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
             thread = new Download(url);
         else if( cmd == std::string("Upload" ))
             thread = new Upload(url);
+        else if( cmd == std::string("Speed" ))
+            thread = new Speed();
         else
-            thread = new PingThread(url);
+            thread = new PingThread(url); //thread = new Speed();
     }
     else
         return ;
