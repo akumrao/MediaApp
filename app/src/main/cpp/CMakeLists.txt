@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 include_directories(./mediaserver/src/base/include ./mediaserver/src/http_parser ./mediaserver/src/crypto/include ./mediaserver/src/net/include ./mediaserver/src/http/include ./mediaserver/src/libuv/include ./mediaserver/src/libuv/src ./mediaserver/src/libuv/src/unix )
 
-file(GLOB SOURCES "*.cpp"  "./mediaserver/src/libuv/src/*.cpp" "./mediaserver/src/http_parser/*.cpp" "./mediaserver/src/libuv/src/unix/*.cpp" "./mediaserver/src/base/src/*.cpp" "./mediaserver/src/net/src/TcpC*.cpp" "./mediaserver/src/net/src/U*.cpp" "./mediaserver/src/net/src/IP.cpp" "./mediaserver/src/http/src/p*.cpp" "./mediaserver/src/http/src/r*.cpp" "./mediaserver/src/http/src/u*.cpp" "./mediaserver/src/http/src/m*.cpp" "./mediaserver/src/http/src/c*.cpp" )
+file(GLOB SOURCES "*.cpp"  "./mediaserver/src/libuv/src/*.cpp" "./mediaserver/src/http_parser/*.cpp" "./mediaserver/src/libuv/src/unix/*.cpp" "./mediaserver/src/base/src/*.cpp" "./mediaserver/src/net/src/TcpC*.cpp" "./mediaserver/src/net/src/U*.cpp" "./mediaserver/src/net/src/IP.cpp" "./mediaserver/src/http/src/p*.cpp" "./mediaserver/src/http/src/r*.cpp" "./mediaserver/src/http/src/u*.cpp" "./mediaserver/src/http/src/f*.cpp" "./mediaserver/src/http/src/m*.cpp" "./mediaserver/src/http/src/c*.cpp" )
 #
 #file(GLOB SOURCES "*.cpp")
 

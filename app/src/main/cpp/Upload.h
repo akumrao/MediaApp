@@ -1,6 +1,9 @@
+//
+// Created by root on 28/12/19.
+//
 
-#ifndef MEDIAAPP_Download_H
-#define MEDIAAPP_Download_H
+#ifndef MEDIAAPP_UPLOAD_H
+#define MEDIAAPP_UPLOAD_H
 
 #include "base/process.h"
 #include "base/logger.h"
@@ -11,28 +14,29 @@
 #include "net/netInterface.h"
 #include "http/client.h"
 #include "base/application.h"
+#include "http/form.h"
+
 using namespace base;
 using namespace net;
 
-class Download : public Thread {
+class Upload : public Thread {
 public:
 
-    Download(std::string url);
+    Upload(std::string url);
 
-    ~Download();
+    ~Upload();
 
 
     void run();
-
     void stop(bool flag = true);
-
     URL _url;
     ClientConnecton *client{nullptr};
 
     Application app;
+    FormWriter *form;
+
     uv_async_t async;
 
 };
 
-
-#endif //MEDIAAPP_Download_H
+#endif //MEDIAAPP_UPLOAD_H

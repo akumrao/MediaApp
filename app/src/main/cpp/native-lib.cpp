@@ -2,6 +2,7 @@
 
 #include "PingThread.h"
 #include "Download.h"
+#include "Upload.h"
 
 TickContext g_ctx;
 
@@ -199,6 +200,7 @@ void   sendJavaMsg(JNIEnv *env, jobject instance,
  *     calling back to MainActivity::updateTimer() to display ticks on UI
  *     calling back to JniHelper::updateStatus(String msg) for msg
  */
+/*
 void*  UpdateTicks(void* context) {
     TickContext *pctx = (TickContext*) context;
     JavaVM *javaVM = pctx->javaVM;
@@ -269,55 +271,17 @@ void*  UpdateTicks(void* context) {
     javaVM->DetachCurrentThread();
     return context;
 }
-
+*/
 /*
  * Interface to Java side to start ticks, caller is from onResume()
  */
 
 
 
-Thread *pingThread = nullptr;
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_ui_DownloadFragment_startTicks(JNIEnv *env, jobject instance ,jstring jcmd , jstring jurl ) {
+Thread *thread = nullptr;
 
 
-    const char *c_cmd = env->GetStringUTFChars(jcmd, NULL);
-    std::string cmd = c_cmd;
-
-    const char *c_url = env->GetStringUTFChars(jurl, NULL);
-    std::string url = c_url;
-
-
-    LTrace("StartTicks ", cmd )
-
-    LTrace("StartTicks ", url )
-
-    if (!pingThread)
-    {
-        if( cmd == std::string("Download" ))
-
-            pingThread = new Download(url);
-        else
-            pingThread = new PingThread(url);
-    }
-    else
-        return ;
-
-
-
-    jclass clz = env->GetObjectClass(instance);
-    g_ctx.mainActivityClz = (jclass)env->NewGlobalRef( clz);
-    g_ctx.mainActivityObj = env->NewGlobalRef(instance);
-
-    pingThread->start();
-
-}
-
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,jstring jcmd , jstring jurl ) {
-
+void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
 
     const char *c_cmd = env->GetStringUTFChars(jcmd, NULL);
     std::string cmd = c_cmd;
@@ -330,13 +294,14 @@ Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,js
 
     LTrace("StartTicks ", url )
 
-    if (!pingThread)
+    if (!thread)
     {
         if( cmd == std::string("Download" ))
-
-            pingThread = new Download(url);
+            thread = new Download(url);
+        else if( cmd == std::string("Upload" ))
+            thread = new Upload(url);
         else
-            pingThread = new PingThread(url);
+            thread = new PingThread(url);
     }
     else
         return ;
@@ -347,26 +312,19 @@ Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,js
     g_ctx.mainActivityClz = (jclass)env->NewGlobalRef( clz);
     g_ctx.mainActivityObj = env->NewGlobalRef(instance);
 
-    pingThread->start();
-
+    thread->start();
 }
-/*
- * Interface to Java side to stop ticks:
- *    we need to hold and make sure our native thread has finished before return
- *    for a clean shutdown. The caller is from onPause
- */
-extern "C" JNIEXPORT void JNICALL
-Java_com_harman_vns_ui_DownloadFragment_StopTicks(JNIEnv *env, jobject instance) {
 
 
+void  stop(JNIEnv *env, jobject instance) {
     LTrace("Stop Ticks");
 
-    if( pingThread) {
-        pingThread->stop();
+    if( thread) {
+        thread->stop();
 
         // sleep(1);
-        delete pingThread;
-        pingThread = nullptr;
+        delete thread;
+        thread = nullptr;
 
         LTrace("pingThread delete over");
 
@@ -378,8 +336,27 @@ Java_com_harman_vns_ui_DownloadFragment_StopTicks(JNIEnv *env, jobject instance)
 
         LTrace("Stop Ticks over");
     }
+}
 
-    //pthread_mutex_destroy(&g_ctx.lock);
+extern "C" JNIEXPORT void JNICALL
+Java_com_harman_vns_ui_DownloadFragment_startTicks(JNIEnv *env, jobject instance ,jstring jcmd , jstring jurl ) {
+    start(env,instance, jcmd,jurl );
+}
+
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_harman_vns_ui_PingFragment_startTicks(JNIEnv *env, jobject instance ,jstring jcmd , jstring jurl ) {
+    start(env,instance, jcmd,jurl );
+}
+/*
+ * Interface to Java side to stop ticks:
+ *    we need to hold and make sure our native thread has finished before return
+ *    for a clean shutdown. The caller is from onPause
+ */
+extern "C" JNIEXPORT void JNICALL
+Java_com_harman_vns_ui_DownloadFragment_StopTicks(JNIEnv *env, jobject instance) {
+
+    stop(env,instance );
 }
 
 /*
@@ -390,26 +367,5 @@ Java_com_harman_vns_ui_DownloadFragment_StopTicks(JNIEnv *env, jobject instance)
 extern "C" JNIEXPORT void JNICALL
 Java_com_harman_vns_ui_PingFragment_StopTicks(JNIEnv *env, jobject instance) {
 
-
-    LTrace("Stop Ticks");
-
-   if( pingThread) {
-       pingThread->stop();
-
-      // sleep(1);
-       delete pingThread;
-       pingThread = nullptr;
-
-       LTrace("pingThread delete over");
-
-       // release object we allocated from StartTicks() function
-       env->DeleteGlobalRef(g_ctx.mainActivityClz);
-       env->DeleteGlobalRef(g_ctx.mainActivityObj);
-       g_ctx.mainActivityObj = NULL;
-       g_ctx.mainActivityClz = NULL;
-
-       LTrace("Stop Ticks over");
-   }
-
-    //pthread_mutex_destroy(&g_ctx.lock);
+    stop(env,instance);
 }

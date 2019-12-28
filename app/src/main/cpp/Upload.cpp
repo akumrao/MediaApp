@@ -1,70 +1,73 @@
 //
-// Created by root on 10/12/19.
+// Created by root on 28/12/19.
 //
 
-
-#include "Download.h"
+#include "Upload.h"
 
 #include "base/filesystem.h"
 #include "base/platform.h"
 
 extern TickContext g_ctx;
-
 void sendJavaMsg(JNIEnv *env, jobject instance,  jmethodID func,const char* msg);
+/*****************************************************************************************/
 
-Download::Download(std::string url):_url(url)  {
+Upload::Upload(std::string url) : _url(url) {
 
-    if(!client)
-    {
-
+    if (!client) {
         if (_url.scheme() == "http" || _url.scheme() == "ws") {
             client = new HttpClient(nullptr, _url, HTTP_RESPONSE);
-        }
-        else
-        {
-            LTrace("Only Http download is supported")
+            //client->shouldSendHeader(false);
+        } else {
+            LTrace("Only Http Upload is supported")
         }
 
     }
 
 }
 
+void Upload::stop(bool flag) {
 
-void Download::stop(bool flag ) {
+    LTrace(" Upload::stop")
 
-    LTrace(" Download::stop")
+    if (client) {
 
-    int  r = uv_async_send(&async);
-    assert(r == 0);
+        form->stop(true);
+        form->join();
+        //app.stopAsync();
+        int  r = uv_async_send(&async);
+        assert(r == 0);
+    }
+
+    LTrace(" Upload::stop over")
 
 }
 
-Download::~Download()
-{
-    LTrace("~Download()")
-
+Upload::~Upload() {
+    LTrace("~Upload()")
     join();
-
 }
 
-static void async_cb_download(uv_async_t* handle) {
+static void async_cb_upload(uv_async_t* handle) {
 
-    LTrace("async_cb_download");
-    Download *p = ( Download *) handle->data;
+    LTrace(" Upload::async_cb_upload")
+
+    Upload *p = ( Upload *) handle->data;
     uv_close((uv_handle_t*)&p->async, nullptr);
 
     p->client->Close();
     p->app.stop();
+
     p->join();
     p->app.uvDestroy();
-    LTrace("async_cb_download over");
+
+    LTrace(" Upload::async_cb_upload over")
 
 
 }
 
-void Download::run() {
+void Upload::run() {
 
-    LTrace("Download OnRun");
+    LTrace("Upload OnRun");
 
     /////////////////////////////////////
     TickContext *pctx = (TickContext*) &g_ctx;
@@ -102,16 +105,43 @@ void Download::run() {
 
     ////////////////////////////////////
 
-    std::string path("./");
-    fs::addnode(path, "test.zip");
 
 
-    //Client *conn = new Client("http://zlib.net/index.html");
-    // client->start();
+    client->_request.setMethod("PUT");
+    // client->_request.add( "Expect", "100-continue");
+    client->_request.add("Accept", "*/*");
+    client->_request.setKeepAlive(true);
+
+    //for multipart
+    /*
+    client->_request.setChunkedTransferEncoding(false);
+    auto form = FormWriter::create(client, FormWriter::ENCODING_MULTIPART_FORM);
+    form->addPart("metadata", new StringPart(metadata, "application/json; charset=UTF-8"));
+    form->addPart("file", new FilePart("/var/tmp/a.txt", "text/plain"));
+     */
+
+    // for chunked
+    client->_request.setChunkedTransferEncoding(true);
+    //auto form = FormWriter::create(client, FormWriter::TEXT_PLAIN);
+    //form->addPart("file", new FilePart("/var/tmp/a.txt", "text/plain"));
+    form = FormWriter::create(client, FormWriter::APPLICATION_ZIP);
+    form->addPart("file", new FilePart("./test.zip", FormWriter::APPLICATION_ZIP));
+
+
+    form->header();
+
+    client->fnConnect = [&](ClientConnecton * con) {
+        LTrace("fnConnect")
+        form->start();
+    };
+
+    client->fnClose = [&](ClientConnecton * con) {
+        LTrace("fnClose")
+    };
+
     client->fnComplete = [&](const Response & response) {
         std::cout << "client->fnComplete" << std::endl << std::flush;
-        client->Close();
-        //            app.stop()
+        //form->condWait.signal();
     };
 
     client->fnLoad = [&](const std::string str) {
@@ -119,37 +149,36 @@ void Download::run() {
         sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str()  );
     };
 
-    client->fnConnect = [&](ClientConnecton * con) {
-
-        con->OutgoingProgress.start();
-    };
-
     client->fnPayload = [&](ClientConnecton * con, size_t sz) {
 
-        con->OutgoingProgress.update(sz, con);
     };
 
-    client->_request.setMethod("GET");
-    client->_request.setKeepAlive(false);
-    client->setReadStream(new std::ofstream(path, std::ios_base::out | std::ios_base::binary));
+
     client->send();
 
     async.data = this;
-    int r = uv_async_init(app.uvGetLoop(), &async, async_cb_download);
+    int r = uv_async_init(app.uvGetLoop(), &async, async_cb_upload);
     assert(r == 0);
     app.run();
-    LTrace("run Over");
 
 
-    LTrace("Download Over");
+    if (form)
+        delete form;
 
     sendJavaMsg(env, pctx->mainActivityObj, timerId, "{Download done}"  );
 
+    // expects(fs::exists(path));
+    //expects(crypto::checksum("MD5", path) == "44d667c142d7cda120332623eab69f40");
+    // fs::unlink(path);
 
-   // exit = true;
+
+    //  stop();
+
+    //    exit = true;
+
 
     delete client;
     client = nullptr;
 
-    LTrace("Download Over");
+    LTrace("Upload Over");
 }
