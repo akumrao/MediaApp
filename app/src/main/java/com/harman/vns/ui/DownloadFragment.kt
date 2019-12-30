@@ -33,6 +33,8 @@ class DownloadFragment : Fragment() {
     lateinit var latencyValue: TextView
     lateinit var transferType: RadioGroup
 
+    lateinit var adapter: ArrayAdapter<String>
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
@@ -80,6 +82,22 @@ class DownloadFragment : Fragment() {
 
         transferType.setOnCheckedChangeListener { radioGroup, index ->
             DOWNLOAD_TYPE = TransferType.valueOf(resources.getResourceEntryName(index).toString()).index
+            when(DOWNLOAD_TYPE) {
+                0 -> {
+                    spinner.isEnabled = true
+                    spinner.setSelection(0)
+                    spinner.adapter = adapter
+                }
+                1 -> {
+                    spinner.isEnabled = false
+                    serverUrlId.text = resources.getString(R.string.uploadUrl)
+                }
+                2 -> {
+                    Toast.makeText(activity,
+                            "bi - directional data transfer Under development",
+                            Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         toggleStart.setOnClickListener {
@@ -89,14 +107,16 @@ class DownloadFragment : Fragment() {
                     startTicks("Download", serverUrlId.text.toString())
                 } else if (DOWNLOAD_TYPE == 1) {
                     //TODO: API not available display toast
-                    Toast.makeText(activity,
-                            "upload data transfer Under development",
-                            Toast.LENGTH_SHORT).show()
+                    toggleStart.text = resources.getString(R.string.stop)
+                    startTicks("Upload", serverUrlId.text.toString())
+//                    Toast.makeText(activity,
+//                            "upload data transfer Under development",
+//                            Toast.LENGTH_SHORT).show()
                 } else {
                     //TODO: API not available display toast
-                    Toast.makeText(activity,
-                            "bi - directional data transfer Under development",
-                            Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity,
+//                            "bi - directional data transfer Under development",
+//                            Toast.LENGTH_SHORT).show()
                 }
             } else if (toggleStart.text == resources.getString(R.string.stop)) {
                 toggleStart.text = resources.getString(R.string.start)
@@ -104,10 +124,10 @@ class DownloadFragment : Fragment() {
             }
         }
 
-        val adapter = activity?.let {
+        adapter = activity?.let {
             ArrayAdapter(it,
                     android.R.layout.simple_spinner_item, filesizes)
-        }
+        }!!
         spinner.adapter = adapter
         spinner.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
@@ -134,7 +154,7 @@ class DownloadFragment : Fragment() {
             try {
                 val json = JSONObject(json)
                 latencyValue.text = json.getString("latency_ms")
-                throughputValue.text = json.getString("dowloadspeed_kbps")
+                throughputValue.text = json.getString("Speed_MBS")
                 Log.d("JniHandler1", "download speed: $json")
             } catch (e: Exception) {
                 if (e.localizedMessage.contains("Download done")) {
