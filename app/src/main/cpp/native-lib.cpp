@@ -295,6 +295,8 @@ void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
 
     LTrace("StartTicks ", url )
 
+    static int inc = 0;
+
     if (!thread)
     {
         if( cmd == std::string("Download" ))
@@ -303,8 +305,12 @@ void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
             thread = new Upload(url);
         else if( cmd == std::string("Speed" ))
             thread = new Speed();
-        else
-            thread = new PingThread(url); //thread = new Speed();
+        else {
+            if(++inc % 2 )
+                thread = new PingThread(url);
+            else
+                thread = new Speed();  //  //thread = new Speed();
+        }
     }
     else
         return ;

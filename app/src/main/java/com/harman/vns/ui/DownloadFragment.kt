@@ -153,15 +153,22 @@ class DownloadFragment : Fragment() {
         activity?.runOnUiThread {
             try {
                 val json = JSONObject(json)
+                if (json.has("done") && json.getString("done") == "done") {
+                    StopTicks()
+                    toggleStart.text = resources.getString(R.string.start)
+                    Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
+                    return@runOnUiThread
+                }
+
                 latencyValue.text = json.getString("latency_ms")
                 throughputValue.text = json.getString("Speed_MBS")
                 Log.d("JniHandler1", "download speed: $json")
             } catch (e: Exception) {
-                if (e.localizedMessage.contains("Download done")) {
+//                if (e.localizedMessage.contains("done")) {
                     StopTicks()
                     toggleStart.text = resources.getString(R.string.start)
                     Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
-                }
+//                }
                 e.printStackTrace()
             }
         }

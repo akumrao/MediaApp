@@ -92,8 +92,10 @@ void Speed::run() {
         return stopped();
     });
 
-    if (stopped())
+    if (stopped()) {
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
         return;
+    }
 
 
     STrace << "Server: " << serverInfo.name
@@ -101,6 +103,12 @@ void Speed::run() {
            << " by " << serverInfo.sponsor
            << " (" << serverInfo.distance << " km from you): "
            << sp.latency() << " ms" << std::endl;
+    {
+        std::ostringstream ss;
+        ss << "{server:" << serverInfo.host  << "}" ;
+
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, ss.str().c_str());
+    }
 
 
     STrace << "Ping: " << sp.latency() << " ms." << std::endl;
@@ -110,6 +118,14 @@ void Speed::run() {
     long jitter = 0;
     if (sp.jitter(serverInfo, jitter)) {
         STrace << "Jitter:" << jitter << " ms." << std::endl;
+    }
+
+    {
+        std::ostringstream ss;
+        ss << "{jitter_ms:" << jitter
+           << ", latency_ms:" << sp.latency() << "}";
+
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, ss.str().c_str());
     }
 
 
@@ -132,14 +148,50 @@ void Speed::run() {
      */
 
     if (stopped())
+    {
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
         return;
+    }
 
     double downloadSpeed = 0;
     if (sp.downloadSpeed(serverInfo, downloadConfig, downloadSpeed, [&](bool success, double matrix) {
 
         //std::cout << (success ? '.' : '*') << std::flush;
-        if (success)
-            STrace << std::fixed << std::setprecision(2) << uploadConfig.concurrency * matrix / 1000000 << " Mbit/s" << std::endl << std::flush;
+        if (success) {
+
+            /////////////////////////////////////
+            TickContext *pctx = (TickContext*) &g_ctx;
+            JavaVM *javaVM = pctx->javaVM;
+            JNIEnv *env;
+            jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
+            if (res != JNI_OK) {
+                res = javaVM->AttachCurrentThread( &env, NULL);
+                if (JNI_OK != res) {
+                    LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
+                    return false;
+                }
+            }
+
+            jmethodID statusId = env->GetMethodID( pctx->jniHelperClz,
+                                                   "updateStatus",
+                                                   "(Ljava/lang/String;)V");
+            sendJavaMsg(env, pctx->jniHelperObj, statusId,
+                        "TickerThread status: initializing...");
+
+            // get mainActivity updateTimer function
+            jmethodID timerId = env->GetMethodID( pctx->mainActivityClz,
+                                                  "updateTimer", "(Ljava/lang/String;)V");
+            ////////////////////////////////////////////////////////////////////////////////
+            STrace << std::fixed << std::setprecision(2)
+                   << uploadConfig.concurrency * matrix / 1000000 << " Mbit/s" << std::endl
+                   << std::flush;
+
+            std::ostringstream ss;
+            ss << "{DownloadSpeed_MbitS:" << double(uploadConfig.concurrency * matrix / 1000000)
+               << ", latency_ms:" << sp.latency() << "}";
+
+            sendJavaMsg(env, pctx->mainActivityObj, timerId, ss.str().c_str() );
+        }
         else {
             STrace << "download failed" << std::endl << std::flush;
             return false;
@@ -149,41 +201,82 @@ void Speed::run() {
     })) {
 
         STrace <<  "Download: " << std::fixed << std::setprecision(2) << downloadSpeed << " Mbit/s" << std::endl;
-
+        std::ostringstream ss;
+        ss << "{DownloadSpeed_MbitS:" << downloadSpeed
+           << ", latency_ms:" << sp.latency() << "}";
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, ss.str().c_str() );
 
     } else {
         STrace << "Download test failed." << std::endl;
-
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
         return;
     }
 
-    if (stopped())
+    if (stopped()) {
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}");
         return;
+    }
 
 
     double uploadSpeed = 0;
     if (sp.uploadSpeed(serverInfo, uploadConfig, uploadSpeed, [&](bool success, double matrix) {
 
         // std::cout << (success ? '.' : '*') << std::flush;
-        if (success)
-            STrace << "Upload:" << std::fixed << std::setprecision(2) << uploadConfig.concurrency * matrix / 1000000 << " Mbit/s" << std::endl << std::flush;
+        if (success) {
+            /////////////////////////////////////
+            TickContext *pctx = (TickContext*) &g_ctx;
+            JavaVM *javaVM = pctx->javaVM;
+            JNIEnv *env;
+            jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
+            if (res != JNI_OK) {
+                res = javaVM->AttachCurrentThread( &env, NULL);
+                if (JNI_OK != res) {
+                    LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
+                    return false;
+                }
+            }
+
+            jmethodID statusId = env->GetMethodID( pctx->jniHelperClz,
+                                                   "updateStatus",
+                                                   "(Ljava/lang/String;)V");
+            sendJavaMsg(env, pctx->jniHelperObj, statusId,
+                        "TickerThread status: initializing...");
+
+            // get mainActivity updateTimer function
+            jmethodID timerId = env->GetMethodID( pctx->mainActivityClz,
+                                                  "updateTimer", "(Ljava/lang/String;)V");
+            ////////////////////////////////////////////////////////////////////////////////
+            STrace << "Upload:" << std::fixed << std::setprecision(2)
+                   << uploadConfig.concurrency * matrix / 1000000 << " Mbit/s" << std::endl
+                   << std::flush;
+
+            std::ostringstream ss;
+            ss << "{UploadSpeed_MbitS:" << double(uploadConfig.concurrency * matrix / 1000000)
+               << ", latency_ms:" << sp.latency() << "}";
+
+            sendJavaMsg(env, pctx->mainActivityObj, timerId, ss.str().c_str() );
+        }
         else {
-            std::cout << "upload test failed" << std::endl << std::flush;
+            STrace << "upload test failed" << std::endl << std::flush;
             return false;
         }
         return stopped();
     })) {
 
         STrace << "Upload: " << std::fixed << std::setprecision(2) << uploadSpeed << " Mbit/s" << std::endl;
+        std::ostringstream ss;
+        ss << "{UploadSpeed_MbitS:" << uploadSpeed
+           << ", latency_ms:" << sp.latency() << "}";
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, ss.str().c_str() );
 
 
     } else {
         STrace << "Upload test failed." << std::endl;
-        return;
+
     }
 
 
-    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{Speed_Test_done}"  );
+    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
 
 
     LTrace("Speed Over");

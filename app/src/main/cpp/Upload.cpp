@@ -69,6 +69,7 @@ void Upload::run() {
 
     LTrace("Upload OnRun");
 
+
     /////////////////////////////////////
     TickContext *pctx = (TickContext*) &g_ctx;
     JavaVM *javaVM = pctx->javaVM;
@@ -125,8 +126,8 @@ void Upload::run() {
     //auto form = FormWriter::create(client, FormWriter::TEXT_PLAIN);
     //form->addPart("file", new FilePart("/var/tmp/a.txt", "text/plain"));
     form = FormWriter::create(client, FormWriter::APPLICATION_ZIP);
-    form->addPart("file", new FilePart("./test.zip", FormWriter::APPLICATION_ZIP));
-
+    //form->addPart("file", new FilePartPart("./test.zip", FormWriter::APPLICATION_ZIP));
+    form->addPart("file", new StringPart( std::string( FILE_CHUNK_SIZE*1024, '*'), FormWriter::APPLICATION_ZIP));
 
     form->header();
 
@@ -139,6 +140,14 @@ void Upload::run() {
         LTrace("fnClose")
     };
 
+
+    client->fnFormClose = [&](ClientConnecton * con) {
+         int  r = uv_async_send(&async);
+    };
+
+
+
+
     client->fnComplete = [&](const Response & response) {
         std::cout << "client->fnComplete" << std::endl << std::flush;
         //form->condWait.signal();
@@ -146,6 +155,22 @@ void Upload::run() {
 
     client->fnLoad = [&](const std::string str) {
         LTrace(str)
+
+        TickContext *pctx = (TickContext*) &g_ctx;
+        JavaVM *javaVM = pctx->javaVM;
+        JNIEnv *env;
+        jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
+        if (res != JNI_OK) {
+            res = javaVM->AttachCurrentThread( &env, NULL);
+            if (JNI_OK != res) {
+                LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
+                return ;
+            }
+        }
+
+        jmethodID statusId = env->GetMethodID( pctx->jniHelperClz,
+                                               "updateStatus",
+                                               "(Ljava/lang/String;)V");
         sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str()  );
     };
 
@@ -165,7 +190,7 @@ void Upload::run() {
     if (form)
         delete form;
 
-    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{Download done}"  );
+    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
 
     // expects(fs::exists(path));
     //expects(crypto::checksum("MD5", path) == "44d667c142d7cda120332623eab69f40");

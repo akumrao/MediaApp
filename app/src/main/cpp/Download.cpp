@@ -51,7 +51,7 @@ static void async_cb_download(uv_async_t* handle) {
 
     LTrace("async_cb_download");
     Download *p = ( Download *) handle->data;
-    uv_close((uv_handle_t*)&p->async, nullptr);
+   // uv_close((uv_handle_t*)&p->async, nullptr);
 
     p->client->Close();
     p->app.stop();
@@ -110,6 +110,7 @@ void Download::run() {
     // client->start();
     client->fnComplete = [&](const Response & response) {
         std::cout << "client->fnComplete" << std::endl << std::flush;
+        uv_close((uv_handle_t*)&async, nullptr);
         client->Close();
         //            app.stop()
     };
@@ -143,7 +144,7 @@ void Download::run() {
 
     LTrace("Download Over");
 
-    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{Download done}"  );
+    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
 
 
    // exit = true;

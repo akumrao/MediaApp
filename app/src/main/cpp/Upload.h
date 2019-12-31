@@ -36,6 +36,7 @@ public:
     FormWriter *form;
 
     uv_async_t async;
+    uv_async_t asyncUpdate;
 
 };
 
