@@ -17,7 +17,7 @@ void   sendJavaMsg(JNIEnv *env, jobject instance,  jmethodID func,const char* ms
 
 PingThread::PingThread(std::string host)  {
 
-    proc.args = {"ping", "-W",  "4",  host};
+    proc.args = {"ping", "-W",  "4", "-c", "60",  host};
 }
 
 void PingThread::stop(bool flag ) {
@@ -81,10 +81,11 @@ void PingThread::run() {
             {
                 LTrace( T );
 
-                gettimeofday(&beginTime, NULL);
+                //gettimeofday(&beginTime, NULL);
 
                 //(*env)->CallVoidMethod(env, pctx->mainActivityObj, timerId);
 
+                if(T.length())
                 sendJavaMsg(env, pctx->mainActivityObj, timerId, T.c_str()  );
 
 
@@ -94,6 +95,7 @@ void PingThread::run() {
 
     };
     proc.onexit = [&](int64_t status) {
+        LTrace("PingThread onexit");
         sendJavaMsg(env, pctx->jniHelperObj, statusId,
                     "TickerThread status: ticking stopped");
         javaVM->DetachCurrentThread();
@@ -101,4 +103,6 @@ void PingThread::run() {
     proc.spawn();
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 
+
+    LTrace("PingThread Ping over");
 }
