@@ -13,6 +13,7 @@
 #include <string>
 #include "net/netInterface.h"
 #include "http/client.h"
+#include "http/HttpClient.h"
 #include "base/application.h"
 #include "http/form.h"
 

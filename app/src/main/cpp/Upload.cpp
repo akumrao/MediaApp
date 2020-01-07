@@ -3,7 +3,6 @@
 //
 
 #include "Upload.h"
-
 #include "base/filesystem.h"
 #include "base/platform.h"
 
@@ -131,12 +130,12 @@ void Upload::run() {
 
     form->header();
 
-    client->fnConnect = [&](ClientConnecton * con) {
+    client->fnConnect = [&](HttpBase * con) {
         LTrace("fnConnect")
         form->start();
     };
 
-    client->fnClose = [&](ClientConnecton * con) {
+    client->fnClose = [&](HttpBase * con) {
         LTrace("fnClose")
     };
 
@@ -153,7 +152,7 @@ void Upload::run() {
         //form->condWait.signal();
     };
 
-    client->fnLoad = [&](const std::string str) {
+    client->fnUpdateProgess = [&](const std::string str) {
         LTrace(str)
 
         TickContext *pctx = (TickContext*) &g_ctx;
@@ -174,7 +173,7 @@ void Upload::run() {
         sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str()  );
     };
 
-    client->fnPayload = [&](ClientConnecton * con, size_t sz) {
+    client->fnPayload = [&](HttpBase * conn, const char* data, size_t sz) {
 
     };
 

@@ -115,18 +115,18 @@ void Download::run() {
         //            app.stop()
     };
 
-    client->fnLoad = [&](const std::string str) {
+    client->fnUpdateProgess = [&](const std::string str) {
         LTrace(str)
         sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str()  );
     };
 
-    client->fnConnect = [&](ClientConnecton * con) {
-
-        con->OutgoingProgress.start();
+    client->fnConnect = [&](HttpBase * conn) {
+       ClientConnecton* con = (ClientConnecton*) conn;
+       con->OutgoingProgress.start();
     };
 
-    client->fnPayload = [&](ClientConnecton * con, size_t sz) {
-
+    client->fnPayload = [&](HttpBase * conn, const char* data, size_t sz) {
+        ClientConnecton* con = (ClientConnecton*) conn;
         con->OutgoingProgress.update(sz, con);
     };
 
