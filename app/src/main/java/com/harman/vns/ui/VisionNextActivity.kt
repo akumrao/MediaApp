@@ -58,10 +58,10 @@ class VisionNextActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             true
         }
-        navigationView.menu[2].setOnMenuItemClickListener {
-            Toast.makeText(this@VisionNextActivity, "logout", Toast.LENGTH_SHORT).show()
-            false
-        }
+//        navigationView.menu[3].setOnMenuItemClickListener {
+//            Toast.makeText(this@VisionNextActivity, "logout", Toast.LENGTH_SHORT).show()
+//            false
+//        }
 
         // Tie nav graph to items in nav drawer
         setupWithNavController(navigationView, navController)
