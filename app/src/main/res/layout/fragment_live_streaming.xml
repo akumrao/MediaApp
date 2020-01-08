@@ -46,7 +46,7 @@
             app:layout_constraintTop_toBottomOf="@+id/videoView" />
 
         <Button
-            android:id="@+id/stopId"
+            android:id="@+id/stopVideo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stop"
@@ -57,12 +57,11 @@
             android:id="@+id/statisticsVideo"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="32dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="@+id/guideline4"
-            app:layout_constraintTop_toBottomOf="@+id/startVideo" />
+            app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <Space
             android:id="@+id/space2"
@@ -71,5 +70,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textSize="18dp"
+            android:text="video statistics"
+            app:layout_constraintStart_toStartOf="@+id/guideline4"
+            app:layout_constraintTop_toBottomOf="@+id/startVideo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
