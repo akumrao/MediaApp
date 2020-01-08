@@ -9,14 +9,15 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Keep
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.harman.vns.R
+import com.harman.vns.databinding.FragmentDownloadBinding
 import com.harman.vns.utils.DownloadSize
 import com.harman.vns.utils.TransferType
 import org.json.JSONObject
@@ -33,8 +34,12 @@ class DownloadFragment : Fragment() {
     lateinit var latencyValue: TextView
     lateinit var transferType: RadioGroup
 
+    lateinit var uploadLatency: TextView
+    lateinit var uploadSpeed: TextView
+
     lateinit var adapter: ArrayAdapter<String>
 
+    lateinit var binding: FragmentDownloadBinding
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
@@ -66,7 +71,8 @@ class DownloadFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_download, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_download, container, false)
+        rootView = binding.root
         initView()
         return rootView
     }
@@ -76,9 +82,12 @@ class DownloadFragment : Fragment() {
         serverUrlId = rootView.findViewById(R.id.serverUrlId)
         filesizes = resources.getStringArray(R.array.filesize)
         toggleStart = rootView.findViewById(R.id.startDownload)
-        throughputValue = rootView.findViewById(R.id.throughputValue)
-        latencyValue = rootView.findViewById(R.id.latencyValue)
+        throughputValue = rootView.findViewById(R.id.downloadSpeed)
+        latencyValue = rootView.findViewById(R.id.downloadLatency)
         transferType = rootView.findViewById(R.id.radioGroup)
+
+        uploadSpeed = rootView.findViewById(R.id.uploadSpeed)
+        uploadLatency = rootView.findViewById(R.id.uploadLatency)
 
         transferType.setOnCheckedChangeListener { radioGroup, index ->
             DOWNLOAD_TYPE = TransferType.valueOf(resources.getResourceEntryName(index).toString()).index
@@ -159,9 +168,21 @@ class DownloadFragment : Fragment() {
                     Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
                     return@runOnUiThread
                 }
+                when(binding.radioGroup.checkedRadioButtonId) {
+                    R.id.download -> {
+                        binding.downloadSpeed.text = json.getString("DownloadSpeed_MBS")
+                        binding.downloadLatency.text = json.getString("latency_ms")
+                    }
+                    R.id.upload -> {
+                        binding.uploadSpeed.text = json.getString("UplaodSpeed_MBS")
+                        binding.uploadLatency.text = json.getString("latency_ms")
+                    }
+                    R.id.bidirection -> {
 
-                latencyValue.text = json.getString("latency_ms")
-                throughputValue.text = json.getString("Speed_MBS")
+                    }
+                }
+
+
                 Log.d("JniHandler1", "download speed: $json")
             } catch (e: Exception) {
 //                if (e.localizedMessage.contains("done")) {

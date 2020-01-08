@@ -22,4 +22,10 @@
         android:name="com.harman.vns.ui.WelcomeFragment"
         android:label="@string/label_vision_next"
         tools:layout="@layout/fragment_welcome" />
+
+    <fragment
+        android:id="@+id/liveStreamingFragment"
+        android:name="com.harman.vns.LiveStreamingFragment"
+        android:label="@string/label_livestreaming"
+        tools:layout="@layout/fragment_live_streaming" />
 </navigation>

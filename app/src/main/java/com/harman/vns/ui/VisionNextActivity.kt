@@ -2,8 +2,10 @@ package com.harman.vns.ui
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.get
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
@@ -55,6 +57,10 @@ class VisionNextActivity : AppCompatActivity() {
             menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true
+        }
+        navigationView.menu[2].setOnMenuItemClickListener {
+            Toast.makeText(this@VisionNextActivity, "logout", Toast.LENGTH_SHORT).show()
+            false
         }
 
         // Tie nav graph to items in nav drawer

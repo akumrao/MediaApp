@@ -16,6 +16,8 @@
     <string name="stop">stop</string>
     <string name="bidirectional">bi - directional</string>
     <string name="uploadUrl">http://speedtest.tele2.net/upload.php</string>
+    <string name="label_logout">Logout</string>
+    <string name="label_livestreaming">Live Streaming</string>
 
     <string-array name="filesize">
         <item>10MB</item>

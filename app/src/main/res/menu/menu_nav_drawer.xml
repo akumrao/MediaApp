@@ -8,5 +8,13 @@
         <item
             android:id="@+id/downloadFragment"
             android:title="@string/label_download" />
+
+        <item
+            android:id="@+id/liveStreamingFragment"
+            android:title="@string/label_livestreaming" />
+
+        <item
+            android:id="@+id/navLogout"
+            android:title="@string/label_logout" />
     </group>
 </menu>
