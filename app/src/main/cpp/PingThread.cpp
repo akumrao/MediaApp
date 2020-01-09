@@ -25,6 +25,7 @@ void PingThread::stop(bool flag ) {
     proc.kill(SIGINT);
     // sleep(1);
     exit = flag;
+    join();
 }
 
 
