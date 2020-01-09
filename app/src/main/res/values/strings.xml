@@ -18,6 +18,7 @@
     <string name="uploadUrl">http://speedtest.tele2.net/upload.php</string>
     <string name="label_logout">Logout</string>
     <string name="label_livestreaming">Live Streaming</string>
+    <string name="label_http_steaming">Http Steaming</string>
 
     <string-array name="filesize">
         <item>10MB</item>
