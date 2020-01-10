@@ -128,7 +128,7 @@ void Upload::run() {
     };
 
     client->fnClose = [&](HttpBase * con, std::string str) {
-        str= "{done:"+ str + "done}" ;
+        str= "{done:"+ str + "}" ;
         LTrace("fnClose " + str);
         uv_close((uv_handle_t*)&async, nullptr);
 
@@ -192,7 +192,7 @@ void Upload::run() {
         jmethodID timerId = env->GetMethodID(pctx->mainActivityClz,
                                              "updateTimer", "(Ljava/lang/String;)V");
         if (timerId)
-            sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}");
+            sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:Upload-Completed}");
     }
 
     // expects(fs::exists(path));
