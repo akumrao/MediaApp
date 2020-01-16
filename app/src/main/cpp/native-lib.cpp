@@ -4,6 +4,7 @@
 #include "Download.h"
 #include "Upload.h"
 #include "Speed.h"
+#include "Signal.h"
 
 TickContext g_ctx;
 
@@ -295,7 +296,7 @@ void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
 
     LTrace("StartTicks ", url )
 
-  //  static int inc = 0;
+    static int inc = 0;
 
     if (!thread)
     {
@@ -305,9 +306,12 @@ void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
             thread = new Upload(url);
         else if( cmd == std::string("Speed" ))
             thread = new Speed();
+        else if( cmd == std::string("Signal" ))
+        thread = new Signal(url);
         else {
-           // if(++inc % 2 )
-                thread = new PingThread(url);
+            thread = new Signal(url);
+           //if(++inc % 2 )
+              //  thread = new PingThread(url);
           //  else
             //    thread = new Speed();  //  //thread = new Speed();
         }
