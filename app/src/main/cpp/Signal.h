@@ -2,7 +2,7 @@
 #ifndef MEDIAAPP_Signal_H
 #define MEDIAAPP_Signal_H
 
-#include "socketio/client.h"
+#include "socketio/socketioClient.h"
 #include "base/logger.h"
 #include "base/thread.h"
 #include "Common.h"
@@ -21,12 +21,14 @@ public:
 
     ~Signal();
 
+    bool isInitiator{false};
+    std::string room{"vns"};::
 
     void run();
 
     void stop(bool flag = true);
 
-    Client *client{nullptr};
+    SocketioClient *client{nullptr};
     URL _url;
     Application app;
     uv_async_t async;
