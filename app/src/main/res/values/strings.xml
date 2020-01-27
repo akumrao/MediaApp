@@ -19,6 +19,9 @@
     <string name="label_logout">Logout</string>
     <string name="label_livestreaming">Live Streaming</string>
     <string name="label_http_steaming">Http Steaming</string>
+    <string name="label_websocket">Web Socket</string>
+    <string name="label_settings">Settings</string>
+    <string name="send_msg">Say Hello</string>
 
     <string-array name="filesize">
         <item>10MB</item>

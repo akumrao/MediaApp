@@ -23,11 +23,12 @@
         android:label="@string/label_vision_next"
         tools:layout="@layout/fragment_welcome" />
 
-<!--    <fragment-->
-<!--        android:id="@+id/liveStreamingFragment"-->
-<!--        android:name="com.harman.vns.LiveStreamingFragment"-->
-<!--        android:label="@string/label_livestreaming"-->
-<!--        tools:layout="@layout/fragment_live_streaming" />-->
+    <fragment
+        android:id="@+id/liveStreamingFragment"
+        android:name="com.harman.vns.LiveStreamingFragment"
+        android:label="@string/label_livestreaming"
+        tools:layout="@layout/fragment_live_streaming" />
+
     <fragment
         android:id="@+id/httpLiveStream"
         android:name="com.harman.vns.HttpLiveStream"
@@ -36,6 +37,11 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.harman.vns.SettingsFragment"
-        android:label="fragment_settings"
+        android:label="@string/label_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/websocket"
+        android:name="com.harman.vns.Websocket"
+        android:label="@string/label_websocket"
+        tools:layout="@layout/fragment_websocket" />
 </navigation>

@@ -9,13 +9,17 @@
             android:id="@+id/downloadFragment"
             android:title="@string/label_download" />
 
-<!--        <item-->
-<!--            android:id="@+id/liveStreamingFragment"-->
-<!--            android:title="@string/label_livestreaming" />-->
+        <item
+            android:id="@+id/websocket"
+            android:title="@string/label_websocket" />
 
         <item
             android:id="@+id/httpLiveStream"
             android:title="@string/label_http_steaming" />
+
+        <item
+            android:id="@+id/liveStreamingFragment"
+            android:title="@string/label_livestreaming"/>
 
 <!--        <item-->
 <!--            android:id="@+id/navLogout"-->
