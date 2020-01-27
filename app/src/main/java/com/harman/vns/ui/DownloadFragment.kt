@@ -162,10 +162,10 @@ class DownloadFragment : Fragment() {
         activity?.runOnUiThread {
             try {
                 val json = JSONObject(json)
-                if (json.has("done") && json.getString("done") == "done") {
+                if (json.has("done")) {
                     StopTicks()
                     toggleStart.text = resources.getString(R.string.start)
-                    Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, json.getString("done"), Toast.LENGTH_SHORT).show()
                     return@runOnUiThread
                 }
                 when(binding.radioGroup.checkedRadioButtonId) {
@@ -188,7 +188,7 @@ class DownloadFragment : Fragment() {
 //                if (e.localizedMessage.contains("done")) {
                     StopTicks()
                     toggleStart.text = resources.getString(R.string.start)
-                    Toast.makeText(activity, "Download completed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
 //                }
                 e.printStackTrace()
             }

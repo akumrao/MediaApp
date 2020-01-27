@@ -69,6 +69,19 @@ void Upload::run() {
     LTrace("Upload OnRun");
 
 
+
+    TickContext *pctx = (TickContext*) &g_ctx;
+    JavaVM *javaVM = pctx->javaVM;
+    JNIEnv *env;
+    jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
+    if (res != JNI_OK) {
+        res = javaVM->AttachCurrentThread( &env, NULL);
+        if (JNI_OK != res) {
+            LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
+            return ;
+        }
+    }
+
     /////////////////////////////////////
 
     //jmethodID timerId = (*env)->GetMethodID(env, pctx->mainActivityClz,
@@ -110,16 +123,23 @@ void Upload::run() {
         form->start();
     };
 
-    client->fnClose = [&](HttpBase * con) {
-        LTrace("fnClose")
-    };
-
-
     client->fnFormClose = [&](ClientConnecton * con) {
          int  r = uv_async_send(&async);
     };
 
+    client->fnClose = [&](HttpBase * con, std::string str) {
+        str= "{done:"+ str + "}" ;
+        LTrace("fnClose " + str);
+        uv_close((uv_handle_t*)&async, nullptr);
 
+        if(pctx->mainActivityClz) {
+            // get mainActivity updateTimer function
+            jmethodID timerId = env->GetMethodID(pctx->mainActivityClz,
+                                                 "updateTimer", "(Ljava/lang/String;)V");
+            if (timerId)
+                sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str()  );
+        }
+    };
 
 
     client->fnComplete = [&](const Response & response) {
@@ -165,24 +185,14 @@ void Upload::run() {
         delete form;
 
 
-    TickContext *pctx = (TickContext*) &g_ctx;
-    JavaVM *javaVM = pctx->javaVM;
-    JNIEnv *env;
-    jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
-    if (res != JNI_OK) {
-        res = javaVM->AttachCurrentThread( &env, NULL);
-        if (JNI_OK != res) {
-            LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res);
-            return ;
-        }
-    }
+
 
     if(pctx->mainActivityClz) {
         // get mainActivity updateTimer function
         jmethodID timerId = env->GetMethodID(pctx->mainActivityClz,
                                              "updateTimer", "(Ljava/lang/String;)V");
         if (timerId)
-            sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}");
+            sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:Upload-Completed}");
     }
 
     // expects(fs::exists(path));

@@ -130,6 +130,15 @@ void Download::run() {
         con->OutgoingProgress.update(sz, con);
     };
 
+
+    client->fnClose = [&](HttpBase * con, std::string str) {
+
+        str= "{done:"+ str + "}" ;
+        LTrace("fnClose " + str);
+        uv_close((uv_handle_t*)&async, nullptr);
+        sendJavaMsg(env, pctx->mainActivityObj, timerId, str.c_str() );
+    };
+
     client->_request.setMethod("GET");
     client->_request.setKeepAlive(false);
     client->setReadStream(new std::ofstream(path, std::ios_base::out | std::ios_base::binary));
@@ -144,7 +153,7 @@ void Download::run() {
 
     LTrace("Download Over");
 
-    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:done}"  );
+    sendJavaMsg(env, pctx->mainActivityObj, timerId, "{done:Download-Completed}"  );
 
 
    // exit = true;
