@@ -25,6 +25,9 @@ class WebsocketAdapter(val list: ArrayList<WebsocketModel>) : RecyclerView.Adapt
         holder.userName.text = list[position].clientid
         if (list[position].status == "online") holder.status.setImageResource(R.drawable.online)
         else holder.status.setImageResource(R.drawable.offline)
+        holder.msgUser.setOnClickListener {
+            holder.groupMsg.visibility = View.VISIBLE
+        }
         holder.sendMsg.setOnClickListener {
             listener.onItemClicked(holder.itemView, position)
         }
