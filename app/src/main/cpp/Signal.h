@@ -22,7 +22,7 @@ public:
     ~Signal();
 
     bool isInitiator{false};
-    std::string room{"vns"};::
+    std::string room{"vns"};
 
     void run();
 

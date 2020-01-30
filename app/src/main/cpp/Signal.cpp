@@ -110,19 +110,19 @@ void Signal::run() {
 
     client = new SocketioClient(SERVER_HOST , SERVER_PORT);
     client->connect();
-    base::sockio::socket* socket = client->io();
+    base::sockio::Socket* socket = client->io();
 
     socket->on("connection", [&](string const& name, json const& data, bool isAck, json & ack_resp)
     {
 
-        socket->on("ipaddr", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("ipaddr", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
 
             LTrace("Server IP address is: " , data);
             // updateRoomURL(ipaddr);
         }));
 
-        socket->on("created", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("created", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
 
             LTrace(cnfg::stringify(data));
             LTrace("Created room", data[0], "- my client ID is", data[1]);
@@ -131,7 +131,7 @@ void Signal::run() {
         }));
 
 
-        socket->on("bye", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("bye", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             //  LTrace("Peer leaving room {" "room" }.`);
             // sendBtn.disabled = true;
@@ -142,7 +142,7 @@ void Signal::run() {
             //}
         }));
 
-        socket->on("joined", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("joined", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             //console.log('This peer has joined room', room, 'with client ID', clientId);
             // isInitiator = false;
@@ -150,25 +150,25 @@ void Signal::run() {
             // grabWebCamVideo();
         }));
 
-        socket->on("full", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("full", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             // alert('Room ' + room + ' is full. We will create a new room for you.');
             // window.location.hash = '';
             // window.location.reload();
         }));
 
-        socket->on("ready", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("ready", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             // console.log('Socket is ready');
             // createPeerConnection(isInitiator, configuration);
         }));
 
-        socket->on("log", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("log", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             //console.log.apply(console, array);
         }));
 
-        socket->on("message", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("message", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             // console.log('SocketioClient received message:', message);
             // signalingMessageCallback(message);
@@ -177,7 +177,7 @@ void Signal::run() {
 
 
         // Leaving rooms and disconnecting from peers.
-        socket->on("disconnect", socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
+        socket->on("disconnect", Socket::event_listener_aux([&](string const& name, json const& data, bool isAck,json &ack_resp){
             LTrace(cnfg::stringify(data));
             //console.log(`Disconnected: ${reason}.`);
             // sendBtn.disabled = true;

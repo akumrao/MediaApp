@@ -26,7 +26,7 @@ Java_com_harman_vns_ui_PingFragment_LocationJNI( JNIEnv *env, jobject jobj, jdou
 
     //Logger::instance().add(new RemoteChannel("debug", Level::Trace, "10.99.234.126"));
 
-    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "10.99.89.206"));
+    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "10.99.109.11"));
 
     double j1d = static_cast<double>(j1);
     double j2d = static_cast<double>(j2);
@@ -152,7 +152,7 @@ void queryRuntimeInfo(JNIEnv *env, jobject instance) {
  */
 extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
 
-    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "10.99.89.206"));
+    Logger::instance().add(new RemoteChannel("debug", Level::Remote, "10.99.109.11"));
 
     //Logger::instance().add(new ConsoleChannel("debug", Level::Trace ));
 
@@ -309,9 +309,9 @@ void   start(JNIEnv *env, jobject instance, jstring jcmd , jstring jurl) {
         else if( cmd == std::string("Signal" ))
         thread = new Signal(url);
         else {
-            thread = new Signal(url);
+            thread = new PingThread(url);
            //if(++inc % 2 )
-              //  thread = new PingThread(url);
+              //  thread = new PingThread(url); //thread = new Signal(url);
           //  else
             //    thread = new Speed();  //  //thread = new Speed();
         }
