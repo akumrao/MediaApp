@@ -10,7 +10,7 @@ git clone --recurse-submodules https://github.com/akumrao/MediaApp.git
 git submodule update --init
 
 Install Android studio
-
+akumrao-patch-1
 open project
 
 connect mobile phone to usb or run emulator 
@@ -37,7 +37,7 @@ apt-get install libc++-dev
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 1000
 
 
-update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 1000
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 1000akumrao-patch-1
 update-alternatives --config clang
 update-alternatives --config clang++
 
@@ -68,3 +68,7 @@ if you get compilation error at NDK
 rm -rf app/.cxx/
 
 ./gradlew clean
+
+
+
+![GitHub Logo](/MediaServer.png)akumrao-patch-1
